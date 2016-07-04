@@ -22,4 +22,4 @@ MethodNamespaceURI = 'urn:xmethods-Temperature'
 # Do it inline ala SOAP::LITE, also specify the actually ns
 
 server = SOAPProxy(SoapEndpointURL, http_proxy=proxy)
-print "inline", server._ns('ns1', MethodNamespaceURI).getTemp(zipcode='94063')
+print("inline", server._ns('ns1', MethodNamespaceURI).getTemp(zipcode='94063'))

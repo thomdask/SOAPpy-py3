@@ -35,4 +35,4 @@ z = parseSOAPRPC(detailed_fault.strip() )
 assert(z.__class__==faultType)
 assert(z.faultstring=="Exception thrown on Server")
 assert(z.detail.loginFailureFault.description=='Login failure (504):Unknown User')
-print "Success"
+print("Success")

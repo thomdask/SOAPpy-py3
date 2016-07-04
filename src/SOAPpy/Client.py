@@ -40,28 +40,29 @@
 ################################################################################
 
 """
-from __future__ import nested_scopes
+
 
 ident = '$Id: Client.py 1496 2010-03-04 23:46:17Z pooryorick $'
 
-from version import __version__
+from .version import __version__
 
 #import xml.sax
-import urllib
-from types import *
+import urllib.request, urllib.parse, urllib.error
+from .types import *
 import re
 import base64
-import socket, httplib
-from httplib import HTTPConnection, HTTP
-import Cookie
+import socket, http.client
+from http.client import HTTPConnection, HTTP
+import http.cookies
 
 # SOAPpy modules
-from Errors      import *
-from Config      import Config
-from Parser      import parseSOAPRPC
-from SOAPBuilder import buildSOAP
-from Utilities   import *
-from Types       import faultType, simplify
+from .Errors      import *
+from .Config      import Config
+from .Parser      import parseSOAPRPC
+from .SOAPBuilder import buildSOAP
+from .Utilities   import *
+from .Types       import faultType, simplify
+import collections
 
 ################################################################################
 # Client
@@ -74,7 +75,7 @@ def SOAPUserAgent():
 
 class SOAPAddress:
     def __init__(self, url, config = Config):
-        proto, uri = urllib.splittype(url)
+        proto, uri = urllib.parse.splittype(url)
 
         # apply some defaults
         if uri[0:2] != '//':
@@ -84,7 +85,7 @@ class SOAPAddress:
             uri = '//' + uri
             proto = 'http'
 
-        host, path = urllib.splithost(uri)
+        host, path = urllib.parse.splithost(uri)
 
         try:
             int(host)
@@ -96,15 +97,13 @@ class SOAPAddress:
             path = '/'
 
         if proto not in ('http', 'https', 'httpg'):
-            raise IOError, "unsupported SOAP protocol"
+            raise IOError("unsupported SOAP protocol")
         if proto == 'httpg' and not config.GSIclient:
-            raise AttributeError, \
-                  "GSI client not supported by this Python installation"
+            raise AttributeError("GSI client not supported by this Python installation")
         if proto == 'https' and not config.SSLclient:
-            raise AttributeError, \
-                "SSL client not supported by this Python installation"
+            raise AttributeError("SSL client not supported by this Python installation")
 
-        self.user,host = urllib.splituser(host)
+        self.user,host = urllib.parse.splituser(host)
         self.proto = proto
         self.host = host
         self.path = path
@@ -154,7 +153,7 @@ class HTTPTransport:
             
 
     def __init__(self):
-        self.cookies = Cookie.SimpleCookie();
+        self.cookies = http.cookies.SimpleCookie();
 
     def getNS(self, original_namespace, data):
         """Extract the (possibly extended) namespace from the returned
@@ -173,7 +172,7 @@ class HTTPTransport:
     def __addcookies(self, r):
         '''Add cookies from self.cookies to request r
         '''
-        for cname, morsel in self.cookies.items():
+        for cname, morsel in list(self.cookies.items()):
             attrs = []
             value = morsel.get('version', '')
             if value != '' and value != '0':
@@ -205,7 +204,7 @@ class HTTPTransport:
             from pyGlobus.io import GSIHTTP
             r = GSIHTTP(real_addr, tcpAttr = config.tcpAttr)
         elif addr.proto == 'https':
-            r = httplib.HTTPS(real_addr, key_file=config.SSL.key_file, cert_file=config.SSL.cert_file)
+            r = http.client.HTTPS(real_addr, key_file=config.SSL.key_file, cert_file=config.SSL.cert_file)
         else:
             r = HTTPWithTimeout(real_addr, timeout=timeout)
 
@@ -223,7 +222,7 @@ class HTTPTransport:
         # if user is not a user:passwd format
         #    we'll receive a failure from the server. . .I guess (??)
         if addr.user != None:
-            val = base64.encodestring(urllib.unquote_plus(addr.user))
+            val = base64.encodestring(urllib.parse.unquote_plus(addr.user))
             r.putheader('Authorization','Basic ' + val.replace('\012',''))
 
         # This fixes sending either "" or "None"
@@ -235,12 +234,12 @@ class HTTPTransport:
         if config.dumpHeadersOut:
             s = 'Outgoing HTTP headers'
             debugHeader(s)
-            print "POST %s %s" % (real_path, r._http_vsn_str)
-            print "Host:", addr.host
-            print "User-agent: SOAPpy " + __version__ + " (http://pywebsvcs.sf.net)"
-            print "Content-type:", t
-            print "Content-length:", len(data)
-            print 'SOAPAction: "%s"' % soapaction
+            print("POST %s %s" % (real_path, r._http_vsn_str))
+            print("Host:", addr.host)
+            print("User-agent: SOAPpy " + __version__ + " (http://pywebsvcs.sf.net)")
+            print("Content-type:", t)
+            print("Content-length:", len(data))
+            print('SOAPAction: "%s"' % soapaction)
             debugFooter(s)
 
         r.endheaders()
@@ -248,9 +247,9 @@ class HTTPTransport:
         if config.dumpSOAPOut:
             s = 'Outgoing SOAP'
             debugHeader(s)
-            print data,
+            print(data, end=' ')
             if data[-1] != '\n':
-                print
+                print()
             debugFooter(s)
 
         # send the payload
@@ -259,7 +258,7 @@ class HTTPTransport:
         # read response line
         code, msg, headers = r.getreply()
 
-        self.cookies = Cookie.SimpleCookie();
+        self.cookies = http.cookies.SimpleCookie();
         if headers:
             content_type = headers.get("content-type","text/xml")
             content_length = headers.get("Content-length")
@@ -296,20 +295,20 @@ class HTTPTransport:
             data = f.read(message_len)
 
         if(config.debug):
-            print "code=",code
-            print "msg=", msg
-            print "headers=", headers
-            print "content-type=", content_type
-            print "data=", data
+            print("code=",code)
+            print("msg=", msg)
+            print("headers=", headers)
+            print("content-type=", content_type)
+            print("data=", data)
                 
         if config.dumpHeadersIn:
             s = 'Incoming HTTP headers'
             debugHeader(s)
             if headers.headers:
-                print "HTTP/1.? %d %s" % (code, msg)
-                print "\n".join(map (lambda x: x.strip(), headers.headers))
+                print("HTTP/1.? %d %s" % (code, msg))
+                print("\n".join([x.strip() for x in headers.headers]))
             else:
-                print "HTTP/0.9 %d %s" % (code, msg)
+                print("HTTP/0.9 %d %s" % (code, msg))
             debugFooter(s)
 
         def startswith(string, val):
@@ -322,9 +321,9 @@ class HTTPTransport:
         if config.dumpSOAPIn:
             s = 'Incoming SOAP'
             debugHeader(s)
-            print data,
+            print(data, end=' ')
             if (len(data)>0) and (data[-1] != '\n'):
-                print
+                print()
             debugFooter(s)
 
         if code not in (200, 500):
@@ -434,7 +433,7 @@ class SOAPProxy:
         except socket.timeout:
             raise SOAPTimeoutError
 
-        except Exception, ex:
+        except Exception as ex:
             #
             # Call failed.
             #
@@ -448,7 +447,7 @@ class SOAPProxy:
             #
 
             if hasattr(self.config, "faultHandler"):
-                if callable(self.config.faultHandler):
+                if isinstance(self.config.faultHandler, collections.Callable):
                     call_retry = self.config.faultHandler(self.proxy, ex)
                     if not call_retry:
                         raise
@@ -478,7 +477,7 @@ class SOAPProxy:
 
         if throw_struct:
             if self.config.debug:
-                print p
+                print(p)
             raise p
 
         # If unwrap_results=1 and there is only element in the struct,
@@ -489,7 +488,7 @@ class SOAPProxy:
         if self.unwrap_results:
             try:
                 count = 0
-                for i in p.__dict__.keys():
+                for i in list(p.__dict__.keys()):
                     if i[0] != "_":  # don't count the private stuff
                         count += 1
                         t = getattr(p, i)
@@ -514,7 +513,7 @@ class SOAPProxy:
     def __getattr__(self, name):  # hook to catch method calls
         if name in ( '__del__', '__getinitargs__', '__getnewargs__',
            '__getstate__', '__setstate__', '__reduce__', '__reduce_ex__'):
-            raise AttributeError, name
+            raise AttributeError(name)
         return self.__Method(self.__call, name, config = self.config)
 
     # To handle attribute weirdness
@@ -548,7 +547,7 @@ class SOAPProxy:
                         
         def __getattr__(self, name):
             if name == '__del__':
-                raise AttributeError, name
+                raise AttributeError(name)
             if self.__name[0] == "_":
                 # Don't nest method if it is a directive
                 return self.__class__(self.__call, name, self.__ns,

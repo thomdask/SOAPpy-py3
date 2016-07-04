@@ -27,7 +27,7 @@ class soap_handler:
     def continue_request(self, data, request):
         # Everthing that follows is cripped from do_POST().
         if self.config.debug:
-            print "\n***RECEIVING***\n", data, "*" * 13 + "\n"
+            print("\n***RECEIVING***\n", data, "*" * 13 + "\n")
             sys.stdout.flush()
 
         try:
@@ -47,8 +47,8 @@ class soap_handler:
     
             try:
                 # First look for registered functions
-                if self.funcmap.has_key(ns) and \
-                   self.funcmap[ns].has_key(method):
+                if ns in self.funcmap and \
+                   method in self.funcmap[ns]:
                     f = self.funcmap[ns][method]
                 else: # Now look at registered objects
                     # Check for nested attributes
@@ -86,18 +86,18 @@ class soap_handler:
                         if f.keywords:
                             tkw = {}
                             # This is lame, but have to de-unicode keywords
-                            for (k,v) in kw.items():
+                            for (k,v) in list(kw.items()):
                                 tkw[str(k)] = v
                             if c:
                                 tkw["_SOAPContext"] = c
-                            fr = apply(f,(),tkw)
+                            fr = f(*(), **tkw)
                         else:
                             if c:
-                                fr = apply(f,args,{'_SOAPContext':c})
+                                fr = f(*args, **{'_SOAPContext':c})
                             else:
-                                fr = apply(f,args,{})
+                                fr = f(*args, **{})
                     else:
-                        fr = apply(f,args,{})
+                        fr = f(*args, **{})
                     if type(fr) == type(self) and isinstance(fr, voidType):
                         resp = buildSOAP(kw = {'%sResponse' % method:fr},
                             encoding = self.encoding,
@@ -107,7 +107,7 @@ class soap_handler:
                             {'%sResponse' % method:{'Result':fr}},
                             encoding = self.encoding,
                             config = self.config)
-                except Fault, e:
+                except Fault as e:
                     resp = buildSOAP(e, config = self.config)
                     status = 500
                 except:
@@ -123,7 +123,7 @@ class soap_handler:
                     status = 500
                 else:
                     status = 200
-        except Fault,e:
+        except Fault as e:
             resp = buildSOAP(e, encoding = self.encoding,
                 config = self.config)
             status = 500
@@ -147,7 +147,7 @@ class soap_handler:
             #self.end_headers()
 
         if self.config.debug:
-            print "\n***SENDING***\n", resp, "*" * 13 + "\n"
+            print("\n***SENDING***\n", resp, "*" * 13 + "\n")
             sys.stdout.flush()
 
         """
@@ -171,7 +171,7 @@ class soap_handler:
     def registerFunction(self, function, namespace = '', funcName = None):
         if not funcName : funcName = function.__name__
         if namespace == '': namespace = self.namespace
-        if self.funcmap.has_key(namespace):
+        if namespace in self.funcmap:
             self.funcmap[namespace][funcName] = function
         else:
             self.funcmap[namespace] = {funcName : function}

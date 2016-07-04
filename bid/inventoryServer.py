@@ -15,7 +15,7 @@ def SimpleBuy(Address, ProductName, Quantity):
     # the strings are of len > 0
     global NUMSIMPLEBUYS
     NUMSIMPLEBUYS += 1
-    if Quantity < 1: raise ValueError, "must order at least one"
+    if Quantity < 1: raise ValueError("must order at least one")
     else:  return "Receipt for %d %s(s) bought from %s" % (int(Quantity), ProductName, serverstring) 
 
 
@@ -23,7 +23,7 @@ def RequestForQuote(ProductName, Quantity):
     # type-checks and makes sure Quantity >= 1
     global NUMREQUESTS
     NUMREQUESTS += 1
-    if Quantity < 1: raise ValueError, "must order at least 1"
+    if Quantity < 1: raise ValueError("must order at least 1")
     else:
         import whrandom
         mult = whrandom.random()
@@ -33,7 +33,7 @@ def RequestForQuote(ProductName, Quantity):
             times += 1
         mult += 0.5
         mult = round(mult, 3)
-        print mult, times
+        print(mult, times)
         return SOAP.doubleType(round(mult*int(Quantity),2))
 
     
@@ -51,9 +51,9 @@ def Buy(**kw):
         POkeys_expected = ["shipTo","billTo","items","poID","createDate"]
         POkeys_expected.sort()
         if POkeys != POkeys_expected:
-            raise ValueError, "struct 'PurchaseOrder' needs %s, %s, %s, %s, and %s" % tuple(POkeys_expected)
+            raise ValueError("struct 'PurchaseOrder' needs %s, %s, %s, %s, and %s" % tuple(POkeys_expected))
     except:
-        raise TypeError, "'PurchaseOrder' missing one or more element(s)"
+        raise TypeError("'PurchaseOrder' missing one or more element(s)")
 
     try:
         btkeys = PurchaseOrder["billTo"]["_keyord"]
@@ -61,7 +61,7 @@ def Buy(**kw):
         btkeys_expected = ["address","zipCode","name","state","city"]
         btkeys_expected.sort()
     except:
-        raise TypeError, "'billTo' missing one or more elements"
+        raise TypeError("'billTo' missing one or more elements")
 
     try:
         stkeys = PurchaseOrder["shipTo"]["_keyord"]
@@ -69,7 +69,7 @@ def Buy(**kw):
         stkeys_expected = ["address","zipCode","name","state","city"]
         stkeys_expected.sort()
     except:
-        raise TypeError, "'shipTo' missing one or more elements"
+        raise TypeError("'shipTo' missing one or more elements")
         
     
     try:
@@ -90,7 +90,7 @@ def Buy(**kw):
         return retstring
     
     except:
-        raise TypeError, "items must be an array of 'item' structs"
+        raise TypeError("items must be an array of 'item' structs")
 
 def Ping():
     global NUMPINGS
@@ -106,7 +106,7 @@ def Monitor(str):
         return "(Buys, RequestForQuote(s),SimpleBuy(s), Ping(s)) = " + \
                repr( (NUMBUYS,NUMREQUESTS,NUMSIMPLEBUYS, NUMPINGS) )
     else:
-        raise ValueError, "not the right string"
+        raise ValueError("not the right string")
 
 def Clear(str):
     if str=="actzero":
@@ -121,16 +121,16 @@ def Clear(str):
         return "(Buys, RequestForQuote(s),SimpleBuy(s), Ping(s)) = " + \
                repr( (NUMBUYS,NUMREQUESTS,NUMSIMPLEBUYS, NUMPINGS) )
     else:
-        raise ValueError, "not the right string"
+        raise ValueError("not the right string")
 
     
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         try:
             port = int(sys.argv[1])
-            if port not in range(2000,15000): raise ValueError
+            if port not in list(range(2000,15000)): raise ValueError
         except:
-            print "port must be a number between 2000 and 15000"
+            print("port must be a number between 2000 and 15000")
             sys.exit(1)
     else: port = 9000
     namespace = "http://www.soapinterop.org/Bid"

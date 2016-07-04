@@ -24,35 +24,35 @@ for line in lines:
   try: table[row[0]].append([restofrow[0],restofrow[2:]])
   except KeyError: table[row[0]] = [[restofrow[0],restofrow[2:]]]
 
-print "<html><body>"
-print "<script>function popup(text) {"
-print "text = '<html><head><title>Test Detail</title></head><body><p>' + text + '</p></body></html>';"
-print "newWin=window.open('','win1','location=no,menubar=no,width=400,height=200');"
-print "newWin.document.open();"
-print "newWin.document.write(text);"
-print "newWin.focus();  } </script>"
-print "<br><table style='font-family: Arial; color: #cccccc'><tr><td colspan=2><font face=arial color=#cccccc><b>Summary</b></font></td></tr>"
+print("<html><body>")
+print("<script>function popup(text) {")
+print("text = '<html><head><title>Test Detail</title></head><body><p>' + text + '</p></body></html>';")
+print("newWin=window.open('','win1','location=no,menubar=no,width=400,height=200');")
+print("newWin.document.open();")
+print("newWin.document.write(text);")
+print("newWin.focus();  } </script>")
+print("<br><table style='font-family: Arial; color: #cccccc'><tr><td colspan=2><font face=arial color=#cccccc><b>Summary</b></font></td></tr>")
 for x in tally:
   z = x[:-1].split(":",1)
-  print "<tr><td><font face=arial color=#cccccc>",z[0],"</font></td><td><font face=arial color=#cccccc>",z[1],"</font></td></tr>"
-print "</table><br>"
+  print("<tr><td><font face=arial color=#cccccc>",z[0],"</font></td><td><font face=arial color=#cccccc>",z[1],"</font></td></tr>")
+print("</table><br>")
 c = 0
-totalmethods = len(table[table.keys()[0]])
+totalmethods = len(table[list(table.keys())[0]])
 while c < totalmethods:
-  print "<br><table width='95%' style='font-family: Arial'>"
-  print "<tr><td width='27%' bgcolor='#cccccc'></td>"
+  print("<br><table width='95%' style='font-family: Arial'>")
+  print("<tr><td width='27%' bgcolor='#cccccc'></td>")
   cols = [c, c + 1, c + 2]
   if c != 16:
     cols += [c + 3]
   for i in cols:
-    try: header = table[table.keys()[0]][i][0]
+    try: header = table[list(table.keys())[0]][i][0]
     except: break
-    print "<td width ='17%' align='center' bgcolor='#cccccc'><b>",header,"</b></td>"
-  print "</tr>"
-  l = table.keys()
+    print("<td width ='17%' align='center' bgcolor='#cccccc'><b>",header,"</b></td>")
+  print("</tr>")
+  l = list(table.keys())
   l.sort()
   for key in l:
-    print "<tr><td bgcolor='#cccccc'>", key , "</td>"
+    print("<tr><td bgcolor='#cccccc'>", key , "</td>")
     for i in cols:
       try: status = table[key][i][1][0]
       except: break
@@ -69,8 +69,8 @@ while c < totalmethods:
         hreftitle = table[key][i][1][1].replace("'","") # remove apostrophes from title properties
         popuphtml = '"' + cgi.escape(cgi.escape(table[key][i][1][1]).replace("'","&#39;").replace('"',"&#34;")) + '"'
         status = "<a title='" + hreftitle + "' href='javascript:popup(" + popuphtml + ")'>Failed</a>"
-      print "<td align='center' bgcolor=" , bgcolor , ">" , status , "</td>"
-    print "</tr>"
-  print "</table>"
+      print("<td align='center' bgcolor=" , bgcolor , ">" , status , "</td>")
+    print("</tr>")
+  print("</table>")
   c = c + len(cols)
-print "</body></html>"
+print("</body></html>")

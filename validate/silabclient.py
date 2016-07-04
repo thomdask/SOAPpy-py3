@@ -45,9 +45,9 @@ def usage (error = None):
     sys.stdout = sys.stderr
 
     if error != None:
-        print error
+        print(error)
 
-    print """usage: %s [options] [server ...]
+    print("""usage: %s [options] [server ...]
   If a long option shows an argument is mandatory, it's mandatory for the
   equivalent short option also.
 
@@ -75,7 +75,7 @@ def usage (error = None):
   -t, --stacktrace      print a stack trace on each unexpected failure
   -T, --always-stacktrace
                         print a stack trace on any failure
-""" % (sys.argv[0], DEFAULT_SERVERS_FILE),
+""" % (sys.argv[0], DEFAULT_SERVERS_FILE), end=' ')
 
     sys.exit (0)
 
@@ -83,19 +83,19 @@ def usage (error = None):
 def methodUsage ():
     sys.stdout = sys.stderr
 
-    print "Methods are specified by number. Multiple methods can be " \
+    print("Methods are specified by number. Multiple methods can be " \
         "specified using a\ncomma-separated list of numbers or ranges. " \
-        "For example 1,4-6,8 specifies\nmethods 1, 4, 5, 6, and 8.\n"
+        "For example 1,4-6,8 specifies\nmethods 1, 4, 5, 6, and 8.\n")
 
-    print "The available methods are:\n"
+    print("The available methods are:\n")
 
     half = (len (DEFAULT_METHODS) + 1) / 2
 
     for i in range (half):
-        print "%4d. %-25s" % (i + 1, DEFAULT_METHODS[i]),
+        print("%4d. %-25s" % (i + 1, DEFAULT_METHODS[i]), end=' ')
         if i + half < len (DEFAULT_METHODS):
-            print "%4d. %-25s" % (i + 1 + half, DEFAULT_METHODS[i + half]),
-        print
+            print("%4d. %-25s" % (i + 1 + half, DEFAULT_METHODS[i + half]), end=' ')
+        print()
 
     sys.exit (0)
 
@@ -132,9 +132,8 @@ def readServers (file):
                 value = cur[tag]
             value += ' ' + line.strip ()
         elif line[0] == '_':
-            raise ValueError, \
-                "%s, line %d: can't have a tag starting with `_'" % \
-                (f.filename(), f.filelineno())
+            raise ValueError("%s, line %d: can't have a tag starting with `_'" % \
+                (f.filename(), f.filelineno()))
         else:
             tag, value = line.split (':', 1)
 
@@ -150,18 +149,16 @@ def readServers (file):
             elif value.lower() in ('1', 'yes', 'false'):
                 value = 1
             else:
-                raise ValueError, \
-                    "%s, line %d: unknown typed value `%s'" % \
-                    (f.filename(), f.filelineno(), value)
+                raise ValueError("%s, line %d: unknown typed value `%s'" % \
+                    (f.filename(), f.filelineno(), value))
         elif tag == 'name':
-            if names.has_key(value):
+            if value in names:
                 old = names[value]
 
-                raise ValueError, \
-                    "%s, line %d: already saw a server named `%s' " \
+                raise ValueError("%s, line %d: already saw a server named `%s' " \
                     "(on line %d of %s)" % \
                     (f.filename(), f.filelineno(), value,
-                        old['_line'], old['_file'])
+                        old['_line'], old['_file']))
             names[value] = cur
 
         if tag == 'nonfunctional':
@@ -173,16 +170,14 @@ def readServers (file):
             try:
                 del cur['nonfunctional'][value]
             except:
-                raise ValueError, \
-                    "%s, line %d: `%s' not marked nonfunctional" % \
-                    (f.filename(), f.filelineno(), value)
+                raise ValueError("%s, line %d: `%s' not marked nonfunctional" % \
+                    (f.filename(), f.filelineno(), value))
         elif tag == 'like':
             try:
                 new = copy.deepcopy(names[value])
             except:
-                raise ValueError, \
-                    "%s, line %d: don't know about a server named `%s'" % \
-                    (f.filename(), f.filelineno(), value)
+                raise ValueError("%s, line %d: don't know about a server named `%s'" % \
+                    (f.filename(), f.filelineno(), value))
 
             # This is so we don't lose the nonfunctional methods in new or
             # in cur
@@ -213,7 +208,7 @@ def str2list (s):
         else:
             l[int (i)] = 1
 
-    l = l.keys ()
+    l = list(l.keys ())
     l.sort ()
 
     return l
@@ -235,7 +230,7 @@ def testActorShouldPass (server, action, harsh):
         result = int (result)
 
     if result != test:
-        raise Exception, "expected %s, got %s" % (test, result)
+        raise Exception("expected %s, got %s" % (test, result))
 
 def testActorShouldFail (server, action, harsh):
     test = 42
@@ -250,12 +245,12 @@ def testActorShouldFail (server, action, harsh):
 
     try:
         result = server.echoInteger (inputInteger = test)
-    except SOAP.faultType, e:
+    except SOAP.faultType as e:
         if harsh and e.faultcode != 'SOAP-ENV:MustUnderstand':
-            raise AttributeError, "unexpected faultcode %s" % e.faultcode
+            raise AttributeError("unexpected faultcode %s" % e.faultcode)
         return
 
-    raise Exception, "should fail, succeeded with %s" % result
+    raise Exception("should fail, succeeded with %s" % result)
 
 def testEchoFloat (server, action, harsh):
     server = server._sa (action % {'methodname': 'echoFloat'})
@@ -267,7 +262,7 @@ def testEchoFloat (server, action, harsh):
             result = float (result)
 
         if not nearlyeq (result, test):
-            raise Exception, "expected %.8f, got %.8f" % (test, result)
+            raise Exception("expected %.8f, got %.8f" % (test, result))
 
 def testEchoFloatArray (server, action, harsh):
     test = [0.0, 1.0, -1.0, 3853.33333333]
@@ -279,8 +274,8 @@ def testEchoFloatArray (server, action, harsh):
             result[i] = float (result[i])
 
         if not nearlyeq (result[i], test[i]):
-            raise Exception, "@ %d expected %s, got %s" % \
-                  (i, repr (test), repr (result))
+            raise Exception("@ %d expected %s, got %s" % \
+                  (i, repr (test), repr (result)))
 
 def testEchoFloatINF (server, action, harsh):
     try:
@@ -294,7 +289,7 @@ def testEchoFloatINF (server, action, harsh):
         result = float (result)
 
     if result != test:
-        raise Exception, "expected %.8f, got %.8f" % (test, result)
+        raise Exception("expected %.8f, got %.8f" % (test, result))
 
 def testEchoFloatNaN (server, action, harsh):
     try:
@@ -308,7 +303,7 @@ def testEchoFloatNaN (server, action, harsh):
         result = float (result)
 
     if result != test:
-        raise Exception, "expected %.8f, got %.8f" % (test, result)
+        raise Exception("expected %.8f, got %.8f" % (test, result))
 
 def testEchoFloatNegINF (server, action, harsh):
     try:
@@ -323,7 +318,7 @@ def testEchoFloatNegINF (server, action, harsh):
         result = float (result)
 
     if result != test:
-        raise Exception, "expected %.8f, got %.8f" % (test, result)
+        raise Exception("expected %.8f, got %.8f" % (test, result))
 
 def testEchoFloatNegZero (server, action, harsh):
     test = float ('-0.0')
@@ -334,7 +329,7 @@ def testEchoFloatNegZero (server, action, harsh):
         result = float (result)
 
     if result != test:
-        raise Exception, "expected %.8f, got %.8f" % (test, result)
+        raise Exception("expected %.8f, got %.8f" % (test, result))
 
 def testEchoInteger (server, action, harsh):
     server = server._sa (action % {'methodname': 'echoInteger'})
@@ -346,7 +341,7 @@ def testEchoInteger (server, action, harsh):
             result = int (result)
 
         if result != test:
-            raise Exception, "expected %.8f, got %.8f" % (test, result)
+            raise Exception("expected %.8f, got %.8f" % (test, result))
 
 def testEchoIntegerArray (server, action, harsh):
     test = [0, 1, -1, 3853]
@@ -358,14 +353,14 @@ def testEchoIntegerArray (server, action, harsh):
             result[i] = int (result[i])
 
         if result[i] != test[i]:
-            raise Exception, "@ %d expected %s, got %s" % \
-                (i, repr (test), repr (result))
+            raise Exception("@ %d expected %s, got %s" % \
+                (i, repr (test), repr (result)))
 
 relaxedStringTests = ['', 'Hello', '\'<&>"',]
 relaxedStringTests = ['Hello', '\'<&>"',]
 harshStringTests = ['', 'Hello', '\'<&>"',
-    u'\u0041', u'\u00a2', u'\u0141', u'\u2342',
-    u'\'<\u0041&>"', u'\'<\u00a2&>"', u'\'<\u0141&>"', u'\'<\u2342&>"',]
+    '\u0041', '\u00a2', '\u0141', '\u2342',
+    '\'<\u0041&>"', '\'<\u00a2&>"', '\'<\u0141&>"', '\'<\u2342&>"',]
 
 def testEchoString (server, action, harsh):
     if harsh:
@@ -378,8 +373,8 @@ def testEchoString (server, action, harsh):
         result = server.echoString (inputString = test)
 
         if result != test:
-            raise Exception, "expected %s, got %s" % \
-                (repr (test), repr (result))
+            raise Exception("expected %s, got %s" % \
+                (repr (test), repr (result)))
 
 def testEchoStringArray (server, action, harsh):
     if harsh:
@@ -390,7 +385,7 @@ def testEchoStringArray (server, action, harsh):
     result = server.echoStringArray (inputStringArray = test)
 
     if result != test:
-        raise Exception, "expected %s, got %s" % (repr (test), repr (result))
+        raise Exception("expected %s, got %s" % (repr (test), repr (result)))
 
 def testEchoStruct (server, action, harsh):
     test = {'varFloat': 2.256, 'varInt': 474, 'varString': 'Utah'}
@@ -402,16 +397,16 @@ def testEchoStruct (server, action, harsh):
         result.varInt = int (result.varInt)
 
     if not nearlyeq (test['varFloat'], result.varFloat):
-        raise Exception, ".varFloat expected %s, got %s" % \
-            (i, repr (test['varFloat']), repr (result.varFloat))
+        raise Exception(".varFloat expected %s, got %s" % \
+            (i, repr (test['varFloat']), repr (result.varFloat)))
 
-    for i in test.keys ():
+    for i in list(test.keys ()):
         if i == 'varFloat':
             continue
 
         if test[i] != getattr (result, i):
-            raise Exception, ".%s expected %s, got %s" % \
-                (i, repr (test[i]), repr (getattr (result, i)))
+            raise Exception(".%s expected %s, got %s" % \
+                (i, repr (test[i]), repr (getattr (result, i))))
 
 
 def testEchoStructArray (server, action, harsh):
@@ -427,17 +422,16 @@ def testEchoStructArray (server, action, harsh):
             result[s].varInt = int (result[s].varInt)
 
         if not nearlyeq (test[s]['varFloat'], result[s].varFloat):
-            raise Exception, \
-                "@ %d.varFloat expected %s, got %s" % \
-                (s, repr (test[s]['varFloat']), repr (result[s].varFloat))
+            raise Exception("@ %d.varFloat expected %s, got %s" % \
+                (s, repr (test[s]['varFloat']), repr (result[s].varFloat)))
 
-        for i in test[s].keys ():
+        for i in list(test[s].keys ()):
             if i == 'varFloat':
                 continue
 
             if test[s][i] != getattr (result[s], i):
-                raise Exception, "@ %d.%s expected %s, got %s" % \
-                    (s, i, repr (test[s][i]), repr (getattr (result[s], i)))
+                raise Exception("@ %d.%s expected %s, got %s" % \
+                    (s, i, repr (test[s][i]), repr (getattr (result[s], i))))
 
 def testEchoVeryLargeFloat (server, action, harsh):
     test = 2.2535e29
@@ -448,7 +442,7 @@ def testEchoVeryLargeFloat (server, action, harsh):
         result = float (result)
 
     if not nearlyeq (result, test):
-        raise Exception, "expected %s, got %s" % (repr (test), repr (result))
+        raise Exception("expected %s, got %s" % (repr (test), repr (result)))
 
 def testEchoVerySmallFloat (server, action, harsh):
     test = 2.2535e29
@@ -459,16 +453,16 @@ def testEchoVerySmallFloat (server, action, harsh):
         result = float (result)
 
     if not nearlyeq (result, test):
-        raise Exception, "expected %s, got %s" % (repr (test), repr (result))
+        raise Exception("expected %s, got %s" % (repr (test), repr (result)))
 
 def testEchoVoid (server, action, harsh):
     server = server._sa (action % {'methodname': 'echoVoid'})
     result = server.echoVoid ()
 
-    for k in result.__dict__.keys ():
+    for k in list(result.__dict__.keys ()):
         if k[0] != '_':
-            raise Exception, "expected an empty structType, got %s" % \
-                repr (result.__dict__)
+            raise Exception("expected an empty structType, got %s" % \
+                repr (result.__dict__))
 
 def testMustUnderstandEqualsOne (server, action, harsh):
     test = 42
@@ -481,12 +475,12 @@ def testMustUnderstandEqualsOne (server, action, harsh):
 
     try:
         result = server.echoInteger (inputInteger = test)
-    except SOAP.faultType, e:
+    except SOAP.faultType as e:
         if harsh and e.faultcode != 'SOAP-ENV:MustUnderstand':
-            raise AttributeError, "unexpected faultcode %s" % e.faultcode
+            raise AttributeError("unexpected faultcode %s" % e.faultcode)
         return
 
-    raise Exception, "should fail, succeeded with %s" % result
+    raise Exception("should fail, succeeded with %s" % result)
 
 def testMustUnderstandEqualsZero (server, action, harsh):
     test = 42
@@ -503,7 +497,7 @@ def testMustUnderstandEqualsZero (server, action, harsh):
         result = int (result)
 
     if result != test:
-        raise Exception, "expected %s, got %s" % (test, result)
+        raise Exception("expected %s, got %s" % (test, result))
 
 def testEchoDate (server, action, harsh):
     test = time.gmtime (time.time ())
@@ -513,12 +507,12 @@ def testEchoDate (server, action, harsh):
     else:
         result = server.echoDate (inputDate = SOAP.dateTimeType (test))
 
-    if not SOAP.Config.typed and type (result) in (type (''), type (u'')):
+    if not SOAP.Config.typed and type (result) in (type (''), type ('')):
         p = SOAP.SOAPParser()
         result = p.convertDateTime(result, 'timeInstant')
 
     if result != test[:6]:
-        raise Exception, "expected %s, got %s" % (repr (test), repr (result))
+        raise Exception("expected %s, got %s" % (repr (test), repr (result)))
 
 def testEchoBase64 (server, action, harsh):
     test = '\x00\x10\x20\x30\x40\x50\x60\x70\x80\x90\xa0\xb0\xc0\xd0\xe0\xf0'
@@ -530,7 +524,7 @@ def testEchoBase64 (server, action, harsh):
         result = base64.decodestring(result)
 
     if result != test:
-        raise Exception, "expected %s, got %s" % (repr (test), repr (result))
+        raise Exception("expected %s, got %s" % (repr (test), repr (result)))
 
 
 def main ():
@@ -585,8 +579,7 @@ def main ():
             elif opt in ('-T', '--always-stacktrace'):
                 printtrace = 2
             else:
-                raise AttributeError, \
-                     "Recognized but unimplemented option `%s'" % opt
+                raise AttributeError("Recognized but unimplemented option `%s'" % opt)
     except SystemExit:
         raise
     except:
@@ -598,7 +591,7 @@ def main ():
     servers = readServers (servers)
 
     if methodnums == None:
-        methodnums = range (1, len (DEFAULT_METHODS) + 1)
+        methodnums = list(range(1, len (DEFAULT_METHODS) + 1))
 
     limitre = re.compile ('|'.join (args), re.IGNORECASE)
 
@@ -628,7 +621,7 @@ def main ():
             title = '%s: %s (#%d)' % (s['name'], name, num)
 
             if SOAP.Config.debug:
-                print "%s:" % title
+                print("%s:" % title)
 
             try:
                 fn = globals ()['test' + name[0].upper () + name[1:]]
@@ -636,17 +629,17 @@ def main ():
                 raise
             except:
                 if 'n' in output:
-                    print title, "test not yet implemented"
+                    print(title, "test not yet implemented")
                 notimp += 1
                 continue
 
             try:
                 fn (server, s['soapaction'], harsh)
-                if s['nonfunctional'].has_key (name):
-                    print title, \
-                        "succeeded despite being marked nonfunctional"
+                if name in s['nonfunctional']:
+                    print(title, \
+                        "succeeded despite being marked nonfunctional")
                 if 's' in output:
-                    print title, "succeeded"
+                    print(title, "succeeded")
                 succeed += 1
             except KeyboardInterrupt:
                 raise
@@ -655,18 +648,18 @@ def main ():
                 if fault[-1] == '\n':
                     fault = fault[:-1]
 
-                if s['nonfunctional'].has_key (name):
+                if name in s['nonfunctional']:
                     if 'F' in output:
                         t = 'as expected'
                         if s['nonfunctional'][name] != '':
                             t += ', ' + s['nonfunctional'][name]
-                        print title, "failed (%s) -" % t, fault
+                        print(title, "failed (%s) -" % t, fault)
                     if printtrace > 1:
                         traceback.print_exc ()
                     failok += 1
                 else:
                     if 'f' in output:
-                        print title, "failed -", fault
+                        print(title, "failed -", fault)
                     if printtrace:
                         traceback.print_exc ()
                     fail += 1
@@ -675,20 +668,20 @@ def main ():
                         return -1
 
     if stats:
-        print "   Tests started at:", time.ctime (started)
+        print("   Tests started at:", time.ctime (started))
         if stats > 0:
-            print "        Total tests: %d" % total
-            print "          Successes: %d (%3.2f%%)" % \
-                (succeed, 100.0 * succeed / total)
+            print("        Total tests: %d" % total)
+            print("          Successes: %d (%3.2f%%)" % \
+                (succeed, 100.0 * succeed / total))
         if stats > 0 or fail > 0:
-            print "Failed unexpectedly: %d (%3.2f%%)" % \
-                (fail, 100.0 * fail / total)
+            print("Failed unexpectedly: %d (%3.2f%%)" % \
+                (fail, 100.0 * fail / total))
         if stats > 0:
-            print " Failed as expected: %d (%3.2f%%)" % \
-                (failok, 100.0 * failok / total)
+            print(" Failed as expected: %d (%3.2f%%)" % \
+                (failok, 100.0 * failok / total))
         if stats > 0 or notimp > 0:
-            print "    Not implemented: %d (%3.2f%%)" % \
-                (notimp, 100.0 * notimp / total)
+            print("    Not implemented: %d (%3.2f%%)" % \
+                (notimp, 100.0 * notimp / total))
 
     return fail + notimp
 

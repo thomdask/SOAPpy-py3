@@ -57,19 +57,19 @@ kw2 = retval[1][1]
 
 assert(retval[0] == adgroupid)
 
-for key in kw1.keys():
+for key in list(kw1.keys()):
   assert(kw1[key]==keyword1[key])
 
-for key in kw2.keys():
+for key in list(kw2.keys()):
   assert(kw2[key]==keyword2[key])
 
 # Check that the header is preserved
 retval = server.echo_header((adgroupid, keylist))
 
-assert(retval[1].has_key('useragent'))
+assert('useragent' in retval[1])
 assert(retval[1]['useragent'] == 'foo')
 
 server.quit()
 
-print "Success!"
+print("Success!")
 

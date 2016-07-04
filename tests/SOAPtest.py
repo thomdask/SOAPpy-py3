@@ -8,7 +8,7 @@
 
 ident = '$Id: SOAPtest.py,v 1.19 2004/04/01 13:25:46 warnes Exp $'
 
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import sys
 import unittest
 import re
@@ -77,7 +77,7 @@ class SOAPTestCase(unittest.TestCase):
                               "_typename":"LineItem"})
         y = buildSOAP([x, x])
         # could be parsed using an XML parser?
-        self.failUnless(string.find(y, "LineItem")>-1)
+        self.assertTrue(string.find(y, "LineItem")>-1)
     
     # test arguments ordering
     def testOrdering(self):
@@ -85,12 +85,12 @@ class SOAPTestCase(unittest.TestCase):
                       kw={"name":"foo1", "address":"bar"}, \
                       config=SOAPConfig(argsOrdering={"newCustomer":("address", "name")}))
         # could be parsed using an XML parser?
-        self.failUnless(string.find(x, "<address ")<string.find(x, "<name "))
+        self.assertTrue(string.find(x, "<address ")<string.find(x, "<name "))
         x = buildSOAP(method="newCustomer", namespace="urn:customer", \
                       kw={"name":"foo1", "address":"bar"}, \
                       config=SOAPConfig(argsOrdering={"newCustomer":("name", "address")}))
         # could be parsed using an XML parser?
-        self.failUnless(string.find(x, "<address ")>string.find(x, "<name "))
+        self.assertTrue(string.find(x, "<address ")>string.find(x, "<name "))
 
     # test struct
     def testStructIn(self):
@@ -123,11 +123,11 @@ class SOAPTestCase(unittest.TestCase):
         }
         y = parseSOAPRPC(x, rules=pr)
         if config.simplify_objects:
-            self.assertEquals(y['Result']['Person']['age'], 49);
-            self.assertEquals(y['Result']['Person']['height'], -5.5);
+            self.assertEqual(y['Result']['Person']['age'], 49);
+            self.assertEqual(y['Result']['Person']['height'], -5.5);
         else:
-            self.assertEquals(y.Result.Person.age, 49);
-            self.assertEquals(y.Result.Person.height, -5.5);
+            self.assertEqual(y.Result.Person.age, 49);
+            self.assertEqual(y.Result.Person.height, -5.5);
 
     # Try the reverse
     def testStructOut(self):
@@ -170,13 +170,13 @@ class SOAPTestCase(unittest.TestCase):
 </SOAP-ENV:Envelope>'''
         y = parseSOAPRPC(x)
         if(config.simplify_objects):
-            self.assertEquals(y['return'][0]['varString'], "West Virginia")
-            self.assertEquals(y['return'][1]['varInt'], -641)
-            self.assertEquals(y['return'][2]['varFloat'], 1.375)
+            self.assertEqual(y['return'][0]['varString'], "West Virginia")
+            self.assertEqual(y['return'][1]['varInt'], -641)
+            self.assertEqual(y['return'][2]['varFloat'], 1.375)
         else:
-            self.assertEquals(getattr(y,"return")[0].varString, "West Virginia")
-            self.assertEquals(getattr(y,"return")[1].varInt, -641)
-            self.assertEquals(getattr(y,"return")[2].varFloat, 1.375)
+            self.assertEqual(getattr(y,"return")[0].varString, "West Virginia")
+            self.assertEqual(getattr(y,"return")[1].varInt, -641)
+            self.assertEqual(getattr(y,"return")[2].varFloat, 1.375)
 
     def testArray1(self):
         x='''<SOAP-ENV:Envelope
@@ -215,13 +215,13 @@ class SOAPTestCase(unittest.TestCase):
 </SOAP-ENV:Envelope>'''
         y = parseSOAPRPC(x)
         if(config.simplify_objects):
-            self.assertEquals(y["return"][0]['string'], "West Virginia")
-            self.assertEquals(y["return"][1]['int'], -641)
-            self.assertEquals(y["return"][2]['float'], 1.375)
+            self.assertEqual(y["return"][0]['string'], "West Virginia")
+            self.assertEqual(y["return"][1]['int'], -641)
+            self.assertEqual(y["return"][2]['float'], 1.375)
         else:
-            self.assertEquals(getattr(y,"return")[0].string, "West Virginia")
-            self.assertEquals(getattr(y,"return")[1].int, -641)
-            self.assertEquals(getattr(y,"return")[2].float, 1.375)
+            self.assertEqual(getattr(y,"return")[0].string, "West Virginia")
+            self.assertEqual(getattr(y,"return")[1].int, -641)
+            self.assertEqual(getattr(y,"return")[2].float, 1.375)
 
     def testUTF8Encoding1(self):
         x = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -241,9 +241,9 @@ class SOAPTestCase(unittest.TestCase):
 </SOAP-ENV:Body></SOAP-ENV:Envelope>'''
         y = parseSOAPRPC(x)
         if config.simplify_objects:
-            self.assertEquals(y['return2'][1], "Hello")
+            self.assertEqual(y['return2'][1], "Hello")
         else:
-            self.assertEquals(y.return2[1], "Hello")
+            self.assertEqual(y.return2[1], "Hello")
             
     def testUTF8Encoding2(self):
         x = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -258,15 +258,15 @@ class SOAPTestCase(unittest.TestCase):
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>'''
         y = parseSOAPRPC(x)
-        self.assertEquals(type(y.a), type([]))
-        self.assertEquals(type(y.b), type(''))
-        self.assertEquals(type(y._getItemAsList('a')), type([]))
-        self.assertEquals(type(y._getItemAsList('b')), type([]))
-        self.assertEquals(y.b, 'Goodbye')
-        self.assertEquals(y.a, ['', 'Hello', '\'<&>"'])
-        self.assertEquals(y._getItemAsList('b'), ['Goodbye'])
-        self.assertEquals(y._getItemAsList('c'), [])
-        self.assertEquals(y._getItemAsList('c', 'hello'), 'hello')
+        self.assertEqual(type(y.a), type([]))
+        self.assertEqual(type(y.b), type(''))
+        self.assertEqual(type(y._getItemAsList('a')), type([]))
+        self.assertEqual(type(y._getItemAsList('b')), type([]))
+        self.assertEqual(y.b, 'Goodbye')
+        self.assertEqual(y.a, ['', 'Hello', '\'<&>"'])
+        self.assertEqual(y._getItemAsList('b'), ['Goodbye'])
+        self.assertEqual(y._getItemAsList('c'), [])
+        self.assertEqual(y._getItemAsList('c', 'hello'), 'hello')
 
     def testUTF8Encoding2(self):
         x = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -282,9 +282,9 @@ class SOAPTestCase(unittest.TestCase):
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>'''
         y = parseSOAP(x)
-        self.assertEquals(y.a1, 'Hello')
-        self.assertEquals(y.a3, 'Goodbye')
-        self.failIf(hasattr(y, 'a2'))
+        self.assertEqual(y.a1, 'Hello')
+        self.assertEqual(y.a3, 'Goodbye')
+        self.assertFalse(hasattr(y, 'a2'))
 
     def testUTF8Encoding3(self):
         x = '''<?xml version="1.0" encoding="utf-8"?>
@@ -312,13 +312,13 @@ class SOAPTestCase(unittest.TestCase):
 '''
         y = parseSOAPRPC(x)
         if config.simplify_objects:
-            self.assertEquals(y['Result']['Book']['author']['name'], "Henry Ford")
-            self.assertEquals(y['Result']['Book']['author']['address']['web'], "http://www.henryford.com")
-            self.assertEquals(y['Result']['Book']['author']['address']['pers']['name'], "Henry Ford")
+            self.assertEqual(y['Result']['Book']['author']['name'], "Henry Ford")
+            self.assertEqual(y['Result']['Book']['author']['address']['web'], "http://www.henryford.com")
+            self.assertEqual(y['Result']['Book']['author']['address']['pers']['name'], "Henry Ford")
         else:
-            self.assertEquals(y.Result.Book.author.name, "Henry Ford")
-            self.assertEquals(y.Result.Book.author.address.web, "http://www.henryford.com")
-            self.assertEquals(y.Result.Book.author.address.pers.name, "Henry Ford")
+            self.assertEqual(y.Result.Book.author.name, "Henry Ford")
+            self.assertEqual(y.Result.Book.author.address.web, "http://www.henryford.com")
+            self.assertEqual(y.Result.Book.author.address.pers.name, "Henry Ford")
         
     # ref example
     def testRef(self):
@@ -339,15 +339,15 @@ class SOAPTestCase(unittest.TestCase):
 '''
         y = parseSOAPRPC(x)
         if config.simplify_objects:
-            self.assertEquals(y['Return'][0], 0)
-            self.assertEquals(y['Return'][1], 1)
-            self.assertEquals(y['Return'][2], -1)
-            self.failUnless(nearlyeq(y['Return'][3], 3853.33325))
+            self.assertEqual(y['Return'][0], 0)
+            self.assertEqual(y['Return'][1], 1)
+            self.assertEqual(y['Return'][2], -1)
+            self.assertTrue(nearlyeq(y['Return'][3], 3853.33325))
         else:
-            self.assertEquals(y.Return[0], 0)
-            self.assertEquals(y.Return[1], 1)
-            self.assertEquals(y.Return[2], -1)
-            self.failUnless(nearlyeq(y.Return[3], 3853.33325))
+            self.assertEqual(y.Return[0], 0)
+            self.assertEqual(y.Return[1], 1)
+            self.assertEqual(y.Return[2], -1)
+            self.assertTrue(nearlyeq(y.Return[3], 3853.33325))
 
     # Make sure passing in our own bodyType works.
     def testBodyType(self):
@@ -358,9 +358,9 @@ class SOAPTestCase(unittest.TestCase):
         x = buildSOAP(b)
         y = parseSOAP(x)
 
-        self.assertEquals(id(y.a), id(y.b))
-        self.assertEquals(y.a, a)
-        self.assertEquals(y.b, a)
+        self.assertEqual(id(y.a), id(y.b))
+        self.assertEqual(y.a, a)
+        self.assertEqual(y.b, a)
 
     # Test Envelope versioning (see section 4.1.2 of http://www.w3.org/TR/SOAP).
     def testEnvelopeVersioning(self):
@@ -377,10 +377,10 @@ class SOAPTestCase(unittest.TestCase):
 
         try:
             parseSOAP(xml)
-        except Exception, e:
-            self.failUnless(isinstance(e, faultType))
-            self.assertEquals(e.faultcode, '%s:VersionMismatch' % NS.ENV_T)
-            self.failIf(hasattr(e, 'detail'))
+        except Exception as e:
+            self.assertTrue(isinstance(e, faultType))
+            self.assertEqual(e.faultcode, '%s:VersionMismatch' % NS.ENV_T)
+            self.assertFalse(hasattr(e, 'detail'))
 
     # Big terrible ordered data with attributes test.
     def testBigOrderedData(self):
@@ -495,9 +495,9 @@ class SOAPTestCase(unittest.TestCase):
 '''
         x, a = parseSOAPRPC(x, attrs = 1) 
         if config.simplify_objects:
-            self.assertEquals(a[id(x['Result'])][(None, 'name')], 'fred')
+            self.assertEqual(a[id(x['Result'])][(None, 'name')], 'fred')
         else:
-            self.assertEquals(a[id(x.Result)][(None, 'name')], 'fred')
+            self.assertEqual(a[id(x.Result)][(None, 'name')], 'fred')
 
     def testParseException(self):
         x='''<SOAP-ENV:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:SOAP-ENC="http://schemas.xmlsoap.org/soap/encoding/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" SOAP-ENV:encodingStyle="http://schemas.microsoft.com/soap/encoding/clr/1.0 http://schemas.xmlsoap.org/soap/encoding/" xmlns:a1="http://schemas.microsoft.com/clr/ns/System.Runtime.Serialization.Formatters">
@@ -535,8 +535,8 @@ class SOAPTestCase(unittest.TestCase):
 '''
 
         z = parseSOAPRPC(x)
-        self.assertEquals(z.__class__,faultType)
-        self.assertEquals(z.faultstring, "Exception thrown on Server")
+        self.assertEqual(z.__class__,faultType)
+        self.assertEqual(z.faultstring, "Exception thrown on Server")
 
             
     def testFlatEnvelope(self):
@@ -545,43 +545,43 @@ class SOAPTestCase(unittest.TestCase):
 '''
         z = parseSOAPRPC(x)
         if config.simplify_objects:
-            self.assertEquals(type(z['Result']), type(''))
+            self.assertEqual(type(z['Result']), type(''))
         else:
-            self.assertEquals(type(z.Result), type(''))
+            self.assertEqual(type(z.Result), type(''))
 
     def testNumericArray(self):
         x = [1,2,3,4,5]
         y = buildSOAP(x)
         z = parseSOAPRPC(y)
-        self.assertEquals(x, z)
+        self.assertEqual(x, z)
 
     def testStringArray(self):
         x = ["cayce", "asd", "buy"]
         y = buildSOAP(x)
         z = parseSOAPRPC(y)
-        self.assertEquals(x, z)
+        self.assertEqual(x, z)
 
     def testStringArray1(self):
         x = arrayType(['a', 'b', 'c'])
         y = buildSOAP(x)
         z = parseSOAP(y)
         if config.simplify_objects:        
-            self.assertEquals(z.v1._elemsname, 'item')
-            self.assertEquals(z.v1, x)
+            self.assertEqual(z.v1._elemsname, 'item')
+            self.assertEqual(z.v1, x)
         else:
-            self.assertEquals(z['v1']['_elemsname'], 'item')
-            self.assertEquals(z['v1'], x)
+            self.assertEqual(z['v1']['_elemsname'], 'item')
+            self.assertEqual(z['v1'], x)
 
     def testStringArray2(self):
         x = arrayType(['d', 'e', 'f'], elemsname = 'elementals')
         y = buildSOAP(x)
         z = parseSOAP(y)
         if config.simplify_objects:        
-            self.assertEquals(z.v1._elemsname, 'elementals')
-            self.assertEquals(z.v1, x)
+            self.assertEqual(z.v1._elemsname, 'elementals')
+            self.assertEqual(z.v1, x)
         else:
-            self.assertEquals(z['v1']['_elemsname'], 'elementals')
-            self.assertEquals(z['v1'], x)
+            self.assertEqual(z['v1']['_elemsname'], 'elementals')
+            self.assertEqual(z['v1'], x)
 
     def testInt1(self):
         my_xml = '''
@@ -595,11 +595,11 @@ class SOAPTestCase(unittest.TestCase):
 '''
         s = parseSOAPRPC(my_xml)
         if config.simplify_objects:
-            self.assertEquals(s['statenum'], 41)
-            self.assertEquals(type(s['statenum']), type(0))
+            self.assertEqual(s['statenum'], 41)
+            self.assertEqual(type(s['statenum']), type(0))
         else:
-            self.assertEquals(s.statenum, 41)
-            self.assertEquals(type(s.statenum), type(0))
+            self.assertEqual(s.statenum, 41)
+            self.assertEqual(type(s.statenum), type(0))
 
     def testInt2(self):
         my_xml_ns = '''
@@ -613,11 +613,11 @@ class SOAPTestCase(unittest.TestCase):
 '''
         s = parseSOAPRPC(my_xml_ns)
         if config.simplify_objects:
-            self.assertEquals(s['statenum'], 41, "NS one failed")
-            self.assertEquals(type(s['statenum']), type(0))
+            self.assertEqual(s['statenum'], 41, "NS one failed")
+            self.assertEqual(type(s['statenum']), type(0))
         else:
-            self.assertEquals(s.statenum, 41, "NS one failed")
-            self.assertEquals(type(s.statenum), type(0))
+            self.assertEqual(s.statenum, 41, "NS one failed")
+            self.assertEqual(type(s.statenum), type(0))
 
     def testPriceAndVolume(self):
         my_xml2 = '''
@@ -643,11 +643,11 @@ class SOAPTestCase(unittest.TestCase):
 '''
         s = parseSOAPRPC(my_xml2)
         if config.simplify_objects:
-            self.assertEquals(s['PriceAndVolume']['LastTradePrice'].strip(), "34.5")
-            self.assertEquals(s['PriceAndVolume']['DayVolume'].strip(), "10000")
+            self.assertEqual(s['PriceAndVolume']['LastTradePrice'].strip(), "34.5")
+            self.assertEqual(s['PriceAndVolume']['DayVolume'].strip(), "10000")
         else:
-            self.assertEquals(s.PriceAndVolume.LastTradePrice.strip(), "34.5")
-            self.assertEquals(s.PriceAndVolume.DayVolume.strip(), "10000")
+            self.assertEqual(s.PriceAndVolume.LastTradePrice.strip(), "34.5")
+            self.assertEqual(s.PriceAndVolume.DayVolume.strip(), "10000")
 
     def testInt3(self):
         my_xml3 = '''
@@ -665,11 +665,11 @@ class SOAPTestCase(unittest.TestCase):
         s = parseSOAPRPC(my_xml3)
 
         if config.simplify_objects:
-            self.assertEquals(s['param']['lowerBound'], 18)
-            self.assertEquals(s['param']['upperBound'], 139)
+            self.assertEqual(s['param']['lowerBound'], 18)
+            self.assertEqual(s['param']['upperBound'], 139)
         else:
-            self.assertEquals(s.param.lowerBound, 18)
-            self.assertEquals(s.param.upperBound, 139)
+            self.assertEqual(s.param.lowerBound, 18)
+            self.assertEqual(s.param.upperBound, 139)
 
     def testBoolean(self):
         my_xml4 = '''
@@ -690,21 +690,21 @@ class SOAPTestCase(unittest.TestCase):
 '''
         s = parseSOAPRPC(my_xml4)
         if config.simplify_objects:
-            self.assertEquals(s['param'][0], 12)
-            self.assertEquals(s['param'][1], "Egypt")
-            self.assertEquals(s['param'][2], 0)
-            self.assertEquals(s['param'][3], -31)
-            self.assertEquals(s['param1'], None)
-            self.assertEquals(s['param2'], None)
-            self.assertEquals(s['param3'], 7)
+            self.assertEqual(s['param'][0], 12)
+            self.assertEqual(s['param'][1], "Egypt")
+            self.assertEqual(s['param'][2], 0)
+            self.assertEqual(s['param'][3], -31)
+            self.assertEqual(s['param1'], None)
+            self.assertEqual(s['param2'], None)
+            self.assertEqual(s['param3'], 7)
         else:
-            self.assertEquals(s.param[0], 12)
-            self.assertEquals(s.param[1], "Egypt")
-            self.assertEquals(s.param[2], 0)
-            self.assertEquals(s.param[3], -31)
-            self.assertEquals(s.param1, None)
-            self.assertEquals(s.param2, None)
-            self.assertEquals(s.param3, 7)
+            self.assertEqual(s.param[0], 12)
+            self.assertEqual(s.param[1], "Egypt")
+            self.assertEqual(s.param[2], 0)
+            self.assertEqual(s.param[3], -31)
+            self.assertEqual(s.param1, None)
+            self.assertEqual(s.param2, None)
+            self.assertEqual(s.param3, 7)
 
     def testFault(self):
         my_xml5 = '''
@@ -718,8 +718,8 @@ class SOAPTestCase(unittest.TestCase):
    </SOAP-ENV:Envelope>
 '''
         s = parseSOAPRPC(my_xml5)
-        self.assertEquals(s.__class__, faultType)
-        self.assertEquals(s.faultcode, "SOAP-ENV:Client")
+        self.assertEqual(s.__class__, faultType)
+        self.assertEqual(s.faultcode, "SOAP-ENV:Client")
 
     def testArray2(self):
         my_xml6 = '''
@@ -750,30 +750,30 @@ class SOAPTestCase(unittest.TestCase):
 </SOAP-ENV:Envelope>
 '''
         q = parseSOAPRPC(my_xml6)
-        self.assertEquals(q[0], 5)
-        self.assertEquals(q[1], 3)
-        self.assertEquals(q[2], 2)
-        self.assertEquals(q[3], 'monkey')
-        self.assertEquals(q[4], 'cay')
+        self.assertEqual(q[0], 5)
+        self.assertEqual(q[1], 3)
+        self.assertEqual(q[2], 2)
+        self.assertEqual(q[3], 'monkey')
+        self.assertEqual(q[4], 'cay')
         x = q[5]
         if config.simplify_objects:
-            self.assertEquals(x['monkey'], 5)
-            self.assertEquals(x['cat'], "hello")
-            self.assertEquals(x['ferret'][0], 5)
-            self.assertEquals(x['ferret'][3], 2)
-            self.assertEquals(x['ferret'][5]['cow'], "moose")
+            self.assertEqual(x['monkey'], 5)
+            self.assertEqual(x['cat'], "hello")
+            self.assertEqual(x['ferret'][0], 5)
+            self.assertEqual(x['ferret'][3], 2)
+            self.assertEqual(x['ferret'][5]['cow'], "moose")
         else:
-            self.assertEquals(x.monkey, 5)
-            self.assertEquals(x.cat, "hello")
-            self.assertEquals(x.ferret[0], 5)
-            self.assertEquals(x.ferret[3], 2)
-            self.assertEquals(x.ferret[5].cow, "moose")
+            self.assertEqual(x.monkey, 5)
+            self.assertEqual(x.cat, "hello")
+            self.assertEqual(x.ferret[0], 5)
+            self.assertEqual(x.ferret[3], 2)
+            self.assertEqual(x.ferret[5].cow, "moose")
 
     def testArray3(self):
         x = arrayType([5,4,3,21], "spam")
         y = buildSOAP(x)
         z = parseSOAPRPC(y)
-        self.assertEquals(x, z)
+        self.assertEqual(x, z)
 
     # test struct
     def testStruct(self):
@@ -782,9 +782,9 @@ class SOAPTestCase(unittest.TestCase):
         y = buildSOAP(x)
         z = parseSOAPRPC(y)
         if config.simplify_objects:
-            self.assertEquals( x['test'], z['test'] )
+            self.assertEqual( x['test'], z['test'] )
         else:
-            self.assertEquals( x.test, z.test )
+            self.assertEqual( x.test, z.test )
 
     # test faults
     def testFault1(self):
@@ -792,9 +792,9 @@ class SOAPTestCase(unittest.TestCase):
         y = buildSOAP(x)
 
         z = parseSOAPRPC(y)
-        self.assertEquals( x.faultcode ,  z.faultcode)
-        self.assertEquals( x.faultstring ,  z.faultstring)
-        self.assertEquals( x.detail ,  z.detail)
+        self.assertEqual( x.faultcode ,  z.faultcode)
+        self.assertEqual( x.faultstring ,  z.faultstring)
+        self.assertEqual( x.detail ,  z.detail)
         
     # Test the recursion
     def testRecursion(self):
@@ -808,9 +808,9 @@ class SOAPTestCase(unittest.TestCase):
         x = buildSOAP(tre)
         y = parseSOAPRPC(x)
         if config.simplify_objects:
-            self.assertEquals( y['t']['o']['t']['o']['t']['o']['t']['str'] ,  "two")
+            self.assertEqual( y['t']['o']['t']['o']['t']['o']['t']['str'] ,  "two")
         else:
-            self.assertEquals( y.t.o.t.o.t.o.t.str ,  "two")
+            self.assertEqual( y.t.o.t.o.t.o.t.str ,  "two")
 
     # Test the recursion with structs
     def testRecursionWithStructs(self):
@@ -827,9 +827,9 @@ class SOAPTestCase(unittest.TestCase):
         x = buildSOAP(tre)
         y = parseSOAPRPC(x)
         if config.simplify_objects:
-            self.assertEquals( y['t']['o']['t']['o']['t']['o']['t']['str'] ,  "two")
+            self.assertEqual( y['t']['o']['t']['o']['t']['o']['t']['str'] ,  "two")
         else:
-            self.assertEquals( y.t.o.t.o.t.o.t.str ,  "two")
+            self.assertEqual( y.t.o.t.o.t.o.t.str ,  "two")
 
     def testAmp(self):
         m = "Test Message <tag> & </tag>"
@@ -838,9 +838,9 @@ class SOAPTestCase(unittest.TestCase):
         y = buildSOAP(x)
         z = parseSOAPRPC(y)
         if config.simplify_objects:
-            self.assertEquals( m ,  z['msg'])
+            self.assertEqual( m ,  z['msg'])
         else:
-            self.assertEquals( m ,  z.msg)
+            self.assertEqual( m ,  z.msg)
 
     def testInt4(self):
         my_xml7 = '''
@@ -862,49 +862,49 @@ class SOAPTestCase(unittest.TestCase):
     def testBuildSOAPEncoding(self):
         try:
             x = buildSOAP('hello', encoding = 'gleck')
-        except LookupError, e:
+        except LookupError as e:
             if str (e)[0:16] != 'unknown encoding': raise
             x = None
         except:
-            print "Got unexpected exception: %s %s" % tuple (sys.exc_info ()[0:2])
+            print("Got unexpected exception: %s %s" % tuple (sys.exc_info ()[0:2]))
             x = ''
-        self.assertEquals( x ,  None)
+        self.assertEqual( x ,  None)
 
     # Does SOAPProxy require a valid encoding?
     def testSOAPProxyEncoding(self):
         try:
             x = SOAPProxy('', encoding = 'gleck')
-        except LookupError, e:
+        except LookupError as e:
             if str (e)[0:16] != 'unknown encoding': raise
             x = None
         except:
-            print "Got unexpected exception: %s %s" % tuple (sys.exc_info ()[0:2])
+            print("Got unexpected exception: %s %s" % tuple (sys.exc_info ()[0:2]))
             x = ''
-        self.assertEquals( x ,  None)
+        self.assertEqual( x ,  None)
 
     # Does SOAPServer require a valid encoding?
     def testSOAPServerEncoding(self):
         try:
             x = SOAPServer(('localhost', 0), encoding = 'gleck')
-        except LookupError, e:
+        except LookupError as e:
             if str (e)[0:16] != 'unknown encoding': raise
             x = None
         except:
-            print "Got unexpected exception: %s %s" % tuple (sys.exc_info ()[0:2])
+            print("Got unexpected exception: %s %s" % tuple (sys.exc_info ()[0:2]))
             x = ''
-        self.assertEquals( x ,  None)
+        self.assertEqual( x ,  None)
 
     def testEncodings(self):
         encodings = ('US-ASCII', 'ISO-8859-1', 'UTF-8', 'UTF-16')
 
-        tests = ('A', u'\u0041')
+        tests = ('A', '\u0041')
         for t in tests:
             for i in range (len (encodings)):
                 x = buildSOAP (t, encoding = encodings[i])
                 y = parseSOAPRPC (x)
-                self.assertEquals( y ,  t)
+                self.assertEqual( y ,  t)
 
-        tests = (u'\u00a1',)
+        tests = ('\u00a1',)
         for t in tests:
             for i in range (len (encodings)):
                 try:
@@ -913,9 +913,9 @@ class SOAPTestCase(unittest.TestCase):
                     if i > 0: raise
                     continue
                 y = parseSOAPRPC (x)
-                self.assertEquals( y ,  t)
+                self.assertEqual( y ,  t)
 
-        tests = (u'\u01a1', u'\u2342')
+        tests = ('\u01a1', '\u2342')
         for t in tests:
             for i in range (len (encodings)):
                 try:
@@ -924,7 +924,7 @@ class SOAPTestCase(unittest.TestCase):
                     if i > 1: raise
                     continue
                 y = parseSOAPRPC (x)
-                self.assertEquals( y ,  t)
+                self.assertEqual( y ,  t)
 
     def build_xml(self, schema, type, value, attrs = ''):
         return '''<?xml version="1.0" encoding="UTF-8"?>
@@ -941,10 +941,10 @@ class SOAPTestCase(unittest.TestCase):
 
     # Make sure the various limits are checked when parsing
     def testIntegerLimits(self):
-        for t, l in SOAPParser.intlimits.items():
+        for t, l in list(SOAPParser.intlimits.items()):
             try:
                 parseSOAP(xml % (NS.XSD, t, 'hello'))
-                raise AssertionError, "parsed %s of 'hello' without error" % t
+                raise AssertionError("parsed %s of 'hello' without error" % t)
             except AssertionError:
                 raise
             except:
@@ -953,8 +953,8 @@ class SOAPTestCase(unittest.TestCase):
             if l[1] != None:
                 try:
                     parseSOAP(self.build_xml(NS.XSD, t, l[1] - 1))
-                    raise AssertionError, "parsed %s of %s without error" % \
-                        (t, l[1] - 1)
+                    raise AssertionError("parsed %s of %s without error" % \
+                        (t, l[1] - 1))
                 except AssertionError:
                     raise
                 except UnderflowError:
@@ -963,8 +963,8 @@ class SOAPTestCase(unittest.TestCase):
             if l[2] != None:
                 try:
                     parseSOAP(self.build_xml(NS.XSD, t, l[2] + 1))
-                    raise AssertionError, "parsed %s of %s without error" % \
-                        (t, l[2] + 1)
+                    raise AssertionError("parsed %s of %s without error" % \
+                        (t, l[2] + 1))
                 except AssertionError:
                     raise
                 except OverflowError:
@@ -990,7 +990,7 @@ class SOAPTestCase(unittest.TestCase):
                 # Hide this error for now, cause it is a bug in python 2.0 and 2.1
                 #if not (sys.version_info[0] == 2 and sys.version_info[1] <= 2) \
                 #       and i[1]=='1.7976931348623159E+308':
-                raise AssertionError, "parsed %s of %s without error" % i
+                raise AssertionError("parsed %s of %s without error" % i)
             except AssertionError:
                 raise
             except (UnderflowError, OverflowError):
@@ -1001,7 +1001,7 @@ class SOAPTestCase(unittest.TestCase):
         for t in (anyType, NOTATIONType):
             try:
                 x = t()
-                raise AssertionError, "instantiated %s directly" % repr(t)
+                raise AssertionError("instantiated %s directly" % repr(t))
             except:
                 pass
 
@@ -1021,7 +1021,7 @@ class SOAPTestCase(unittest.TestCase):
             uriReferenceType):
             try:
                 t()
-                raise AssertionError, "instantiated a %s with no value" % t.__name__
+                raise AssertionError("instantiated a %s with no value" % t.__name__)
             except AssertionError:
                 raise
             except:
@@ -1041,9 +1041,8 @@ class SOAPTestCase(unittest.TestCase):
                 try:
                     t(i)
                     
-                    raise AssertionError, \
-                        "instantiated a %s with a bad type (%s)" % \
-                            (repr(t), repr(type(i)))
+                    raise AssertionError("instantiated a %s with a bad type (%s)" % \
+                            (repr(t), repr(type(i))))
                 except AssertionError:
                     raise
                 except:
@@ -1051,18 +1050,18 @@ class SOAPTestCase(unittest.TestCase):
 
             # Now some things that should
 
-            for i in ('hello', u'goodbye'):
+            for i in ('hello', 'goodbye'):
                 x = t(i)
                 d = x._marshalData()
 
                 if d != i:
-                    raise AssertionError, "expected %s, got %s" % (i, d)
+                    raise AssertionError("expected %s, got %s" % (i, d))
 
                 y = buildSOAP(x)
                 z = parseSOAPRPC(y)
 
                 if z != i:
-                    raise AssertionError, "expected %s, got %s" % (i, z)
+                    raise AssertionError("expected %s, got %s" % (i, z))
                 
         # ENTITIES, IDREFS, NMTOKENS
         for t in (ENTITIESType, IDREFSType, NMTOKENSType):
@@ -1073,9 +1072,8 @@ class SOAPTestCase(unittest.TestCase):
             for i in test:
                 try:
                     t(i)
-                    raise AssertionError, \
-                        "instantiated a %s with a bad type (%s)" % \
-                            repr(t), repr(type(i))
+                    raise AssertionError("instantiated a %s with a bad type (%s)" % \
+                            repr(t)).with_traceback(repr(type(i)))
                 except AssertionError:
                     raise
                 except:
@@ -1094,13 +1092,13 @@ class SOAPTestCase(unittest.TestCase):
                 k = ' '.join(j)
 
                 if d != k:
-                    raise AssertionError, "expected %s, got %s" % (k, d)
+                    raise AssertionError("expected %s, got %s" % (k, d))
 
                 y = buildSOAP(x)
                 z = parseSOAPRPC(y)
 
                 if z != j:
-                    raise AssertionError, "expected %s, got %s" % (repr(j), repr(z))
+                    raise AssertionError("expected %s, got %s" % (repr(j), repr(z)))
 
         # uri, uriReference, anyURI
         for t in (uriType, uriReferenceType, anyURIType):
@@ -1110,9 +1108,8 @@ class SOAPTestCase(unittest.TestCase):
             for i in test:
                 try:
                     t(i)
-                    raise AssertionError, \
-                        "instantiated a %s with a bad type (%s)" % \
-                            t.__name__, repr(type(i))
+                    raise AssertionError("instantiated a %s with a bad type (%s)" % \
+                            t.__name__).with_traceback(repr(type(i)))
                 except AssertionError:
                     raise
                 except:
@@ -1120,20 +1117,20 @@ class SOAPTestCase(unittest.TestCase):
 
             # Now some things that should
 
-            for i in ('hello', u'goodbye', '!@#$%^&*()-_=+[{]}\|;:\'",<.>/?`~'):
+            for i in ('hello', 'goodbye', '!@#$%^&*()-_=+[{]}\|;:\'",<.>/?`~'):
                 x = t(i)
                 d = x._marshalData()
 
-                j = urllib.quote(i)
+                j = urllib.parse.quote(i)
 
                 if d != j:
-                    raise AssertionError, "expected %s, got %s" % (j, d)
+                    raise AssertionError("expected %s, got %s" % (j, d))
 
                 y = buildSOAP(x)
                 z = parseSOAPRPC(y)
 
                 if z != i:
-                    raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                    raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # token First some things that shouldn't be valid because of type
         test = (42, 3.14, (), [], {})
@@ -1142,8 +1139,7 @@ class SOAPTestCase(unittest.TestCase):
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad type (%s)" % (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad type (%s)" % (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except AttributeError:
@@ -1156,8 +1152,7 @@ class SOAPTestCase(unittest.TestCase):
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                      "instantiated a %s with a bad value (%s)" % (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except ValueError:
@@ -1165,18 +1160,18 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should be valid
 
-        for i in ('', 'hello', u'hello'):
+        for i in ('', 'hello', 'hello'):
             x = t(i)
             d = x._marshalData()
 
             if d != i:
-                raise AssertionError, "expected %s, got %s" % (i, d)
+                raise AssertionError("expected %s, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i and i != '':
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         #### CDATA, normalizedString
 
@@ -1188,9 +1183,8 @@ class SOAPTestCase(unittest.TestCase):
             for i in test:
                 try:
                     t(i)
-                    raise AssertionError, \
-                        "instantiated a %s with a bad type (%s)" % \
-                            (t.__name__, repr(i))
+                    raise AssertionError("instantiated a %s with a bad type (%s)" % \
+                            (t.__name__, repr(i)))
                 except AssertionError:
                     raise
                 except AttributeError:
@@ -1203,9 +1197,8 @@ class SOAPTestCase(unittest.TestCase):
             for i in test:
                 try:
                     t(i)
-                    raise AssertionError, \
-                        "instantiated a %s with a bad value (%s)" % \
-                            (t.__name__, repr(i))
+                    raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                            (t.__name__, repr(i)))
                 except AssertionError:
                     raise
                 except ValueError:
@@ -1213,18 +1206,18 @@ class SOAPTestCase(unittest.TestCase):
 
             # Now some things that should be valid
 
-            for i in ('', 'hello', u'hello', 'hel lo'):
+            for i in ('', 'hello', 'hello', 'hel lo'):
                 x = t(i)
                 d = x._marshalData()
 
                 if d != i:
-                    raise AssertionError, "expected %s, got %s" % (i, d)
+                    raise AssertionError("expected %s, got %s" % (i, d))
 
                 y = buildSOAP(x)
                 z = parseSOAPRPC(y)
 
                 if z != i and i != '':
-                    raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                    raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         #### boolean
 
@@ -1236,8 +1229,7 @@ class SOAPTestCase(unittest.TestCase):
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except:
@@ -1251,7 +1243,7 @@ class SOAPTestCase(unittest.TestCase):
             d = x._marshalData()
 
             if d != i[1]:
-                raise AssertionError, "%s: expected %s, got %s" % (i[0], i[1], d)
+                raise AssertionError("%s: expected %s, got %s" % (i[0], i[1], d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
@@ -1259,8 +1251,8 @@ class SOAPTestCase(unittest.TestCase):
             j = ('false', 'true')[z]
 
             if j != i[1]:
-                raise AssertionError, "%s: expected %s, got %s" % \
-                    (i[0], repr(i[1]), repr(j))
+                raise AssertionError("%s: expected %s, got %s" % \
+                    (i[0], repr(i[1]), repr(j)))
 
         # Now test parsing, both valid and invalid
 
@@ -1274,15 +1266,14 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != None:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
         # Can we give it a name and no type?
 
@@ -1296,7 +1287,7 @@ class SOAPTestCase(unittest.TestCase):
 
         test = 'true'
         if z.George != test:
-            raise AssertionError, "expected %s, got %s" % (repr(test), repr(z))
+            raise AssertionError("expected %s, got %s" % (repr(test), repr(z)))
 
         # How about some attributes, set in various and sundry manners?
 
@@ -1305,18 +1296,18 @@ class SOAPTestCase(unittest.TestCase):
             ('http://some/namespace', 'namespaceURIattr1'): 3})
         x._setAttr(('http://some/other/namespace', 'namespaceURIattr2'), 4)
 
-        self.assertEquals( x._getAttr('nonamespaceURI') ,  1)
-        self.assertEquals( x._getAttr('NonenamespaceURI') ,  2)
-        self.assertEquals( x._getAttr(('http://some/namespace',
+        self.assertEqual( x._getAttr('nonamespaceURI') ,  1)
+        self.assertEqual( x._getAttr('NonenamespaceURI') ,  2)
+        self.assertEqual( x._getAttr(('http://some/namespace',
                                        'namespaceURIattr1')) ,  3)
-        self.assertEquals( x._getAttr(('http://some/other/namespace',
+        self.assertEqual( x._getAttr(('http://some/other/namespace',
                                        'namespaceURIattr2')) ,  4)
-        self.assertEquals( x._getAttr('non-extant attr') ,  None)
+        self.assertEqual( x._getAttr('non-extant attr') ,  None)
 
         y = buildSOAP(x)
         z = parseSOAPRPC(y)
 
-        self.assertEquals( z ,  1)
+        self.assertEqual( z ,  1)
 
         #### decimal
 
@@ -1328,9 +1319,8 @@ class SOAPTestCase(unittest.TestCase):
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                      "instantiated a %s with a bad type (%s)" % \
-                      (t.__name__, repr(type(i)))
+                raise AssertionError("instantiated a %s with a bad type (%s)" % \
+                      (t.__name__, repr(type(i))))
             except AssertionError:
                 raise
             except:
@@ -1338,18 +1328,18 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (10, 3.14, 23L):
+        for i in (10, 3.14, 23):
             x = t(i)
             d = x._marshalData()
 
             if d != str(i):
-                raise AssertionError, "expected %f, got %s" % (i, d)
+                raise AssertionError("expected %f, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i:
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
@@ -1361,15 +1351,14 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != None:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
         #### float
 
@@ -1381,9 +1370,8 @@ class SOAPTestCase(unittest.TestCase):
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % \
-                    (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                    (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except ValueError:
@@ -1391,18 +1379,18 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (10, 3.14, 23L, -3.4028234663852886E+38, 3.4028234663852886E+38):
+        for i in (10, 3.14, 23, -3.4028234663852886E+38, 3.4028234663852886E+38):
             x = t(i)
             d = x._marshalData()
 
             if not nearlyeq(float(d), i):
-                raise AssertionError, "expected %f, got %s" % (i, d)
+                raise AssertionError("expected %f, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if not nearlyeq(z, i):
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
@@ -1417,15 +1405,14 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if abs(z - i[1]) > 1e-6:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != None:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
         #### double
 
@@ -1441,8 +1428,7 @@ class SOAPTestCase(unittest.TestCase):
                 # Hide this error for now, cause it is a bug in python 2.0 and 2.1
                 if not (sys.version_info[0] == 2 and  sys.version_info[1] <= 2
                         and i==1.7976931348623159E+308):
-                    raise AssertionError, \
-                          "instantiated a double with a bad value (%s)" % repr(i)
+                    raise AssertionError("instantiated a double with a bad value (%s)" % repr(i))
             except AssertionError:
                 raise
             except ValueError:
@@ -1450,18 +1436,18 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (10, 3.14, 23L, -1.79769313486E+308, 1.79769313486E+308):
+        for i in (10, 3.14, 23, -1.79769313486E+308, 1.79769313486E+308):
             x = t(i)
             d = x._marshalData()
 
             if not nearlyeq(float(d), i):
-                raise AssertionError, "expected %s, got %s" % (i, str(x))
+                raise AssertionError("expected %s, got %s" % (i, str(x)))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if not nearlyeq(z, i):
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
@@ -1476,15 +1462,14 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if abs(z - i[1]) > 1e-6:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != None:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
         #### hexBinary
 
@@ -1503,8 +1488,8 @@ class SOAPTestCase(unittest.TestCase):
 
         for i in range(len(test)):
             if test[i] != y[i]:
-                raise AssertionError, "@ %d expected '%s', got '%s'" % \
-                    (i, test[i], y[i])
+                raise AssertionError("@ %d expected '%s', got '%s'" % \
+                    (i, test[i], y[i]))
 
         # Now test parsing, both valid and invalid
 
@@ -1516,15 +1501,14 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != None:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
         #### base64Binary and base64
 
@@ -1540,9 +1524,8 @@ class SOAPTestCase(unittest.TestCase):
             for i in test:
                 try:
                     t(i)
-                    raise AssertionError, \
-                        "instantiated a %s with a bad value (%s)" % \
-                            (t.__name__, repr(i))
+                    raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                            (t.__name__, repr(i)))
                 except AssertionError:
                     raise
                 except AttributeError:
@@ -1550,7 +1533,7 @@ class SOAPTestCase(unittest.TestCase):
 
             # Now some things that should
 
-            test = ('', s, u'hello')
+            test = ('', s, 'hello')
 
             l = []
             for i in test:
@@ -1561,8 +1544,8 @@ class SOAPTestCase(unittest.TestCase):
 
             for i in range(len(test)):
                 if test[i] != y[i]:
-                    raise AssertionError, "@ %d expected '%s', got '%s'" % \
-                        (i, test[i], y[i])
+                    raise AssertionError("@ %d expected '%s', got '%s'" % \
+                        (i, test[i], y[i]))
 
             # Now test parsing, both valid and invalid
 
@@ -1575,15 +1558,14 @@ class SOAPTestCase(unittest.TestCase):
                     z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                     if z != i[1]:
-                        raise AssertionError, "%s: expected %s, got %s" % \
-                            (i[0], i[1], repr(z))
+                        raise AssertionError("%s: expected %s, got %s" % \
+                            (i[0], i[1], repr(z)))
                 except AssertionError:
                     raise
                 except:
                     if i[1] != None:
-                        raise AssertionError, \
-                            "parsing %s as %s threw exception %s:%s" % \
-                            (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                        raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                            (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
         #### binary (uses s from above)
 
@@ -1591,7 +1573,7 @@ class SOAPTestCase(unittest.TestCase):
 
         try:
             x = binaryType('hello', encoding = 'yellow')
-            raise AssertionError, "created binary with invalid encoding"
+            raise AssertionError("created binary with invalid encoding")
         except AssertionError:
             raise
         except:
@@ -1605,9 +1587,8 @@ class SOAPTestCase(unittest.TestCase):
             for i in test:
                 try:
                     binaryType(i, encoding = t)
-                    raise AssertionError, \
-                        "instantiated a %s binary with a bad value (%s)" % \
-                            (e, repr(i))
+                    raise AssertionError("instantiated a %s binary with a bad value (%s)" % \
+                            (e, repr(i)))
                 except AssertionError:
                     raise
                 except AttributeError:
@@ -1615,7 +1596,7 @@ class SOAPTestCase(unittest.TestCase):
 
             # Now some things that should
 
-            test = ('', s, u'hello')
+            test = ('', s, 'hello')
 
             l = []
             for i in test:
@@ -1626,8 +1607,8 @@ class SOAPTestCase(unittest.TestCase):
 
             for i in range(len(test)):
                 if test[i] != y[i]:
-                    raise AssertionError, "@ %d expected '%s', got '%s'" % \
-                        (i, test[i], y[i])
+                    raise AssertionError("@ %d expected '%s', got '%s'" % \
+                        (i, test[i], y[i]))
 
             # Now test parsing, both valid and invalid
 
@@ -1646,19 +1627,18 @@ class SOAPTestCase(unittest.TestCase):
                         ' encoding="%s"' % t))
 
                     if z != i[1]:
-                        raise AssertionError, "%s: expected %s, got %s" % \
-                            (i[0], i[1], repr(z))
+                        raise AssertionError("%s: expected %s, got %s" % \
+                            (i[0], i[1], repr(z)))
                 except AssertionError:
                     raise
                 except:
                     if i[1] != None:
-                        raise AssertionError, \
-                            "parsing %s as %s threw exception %s:%s" % \
-                            (i[0], t, sys.exc_info()[0], sys.exc_info()[1])
+                        raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                            (i[0], t, sys.exc_info()[0], sys.exc_info()[1]))
 
             # Finally try an Array of binaries (with references!)
 
-            test = ('', s, u'hello')
+            test = ('', s, 'hello')
 
             l = []
             for i in test:
@@ -1670,20 +1650,19 @@ class SOAPTestCase(unittest.TestCase):
 
             for i in range(len(test)):
                 if test[i] != y[i]:
-                    raise AssertionError, "@ %d expected '%s', got '%s'" % \
-                        (i, test[i], y[i])
+                    raise AssertionError("@ %d expected '%s', got '%s'" % \
+                        (i, test[i], y[i]))
 
             # Make sure the references worked
 
-            self.assertEquals( id(y[1]) ,  id(y[3]))
+            self.assertEqual( id(y[1]) ,  id(y[3]))
     
     def badTest(self, t, data):
         for i in data:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % \
-                        (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                        (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except:
@@ -1695,15 +1674,15 @@ class SOAPTestCase(unittest.TestCase):
             d = x._marshalData()
 
             if d != i[1]:
-                raise AssertionError, "%s(%s): expected %s, got %s" % \
-                    (t.__name__, repr(i[0]), i[1], d)
+                raise AssertionError("%s(%s): expected %s, got %s" % \
+                    (t.__name__, repr(i[0]), i[1], d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i[2]:
-                raise AssertionError, "%s(%s): expected %s, got %s" % \
-                    (t.__name__, repr(i[0]), repr(i[2]), repr(z))
+                raise AssertionError("%s(%s): expected %s, got %s" % \
+                    (t.__name__, repr(i[0]), repr(i[2]), repr(z)))
 
     def parseTest(self, t, data):
         for i in data:
@@ -1712,15 +1691,14 @@ class SOAPTestCase(unittest.TestCase):
                     i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s(%s): expected %s, got %s" % \
-                        (t.__name__, repr(i[0]), i[1], repr(z))
+                    raise AssertionError("%s(%s): expected %s, got %s" % \
+                        (t.__name__, repr(i[0]), i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != N:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def allTests(self, t, baddata, gooddata, parsedata):
         self.badTest(t, baddata)
@@ -1747,18 +1725,18 @@ class SOAPTestCase(unittest.TestCase):
                 ((), 'PT0S', (N, N, N, N, N, 0.0,)),
                 ([], 'PT0S', (N, N, N, N, N, 0.0,)),
                 ((0.5,), 'PT0.5S', (N, N, N, N, N, 0.5,)),
-                (10L, 'PT10S', (N, N, N, N, N, 10.0,)),
+                (10, 'PT10S', (N, N, N, N, N, 10.0,)),
                 (-10, '-PT10S', (N, N, N, N, N, -10.0,)),
                 (10.5, 'PT10.5S', (N, N, N, N, N, 10.5,)),
-                ((10L, 20), 'PT10M20S', (N, N, N, N, 10, 20.0)),
+                ((10, 20), 'PT10M20S', (N, N, N, N, 10, 20.0)),
                 ((-10, 20), '-PT10M20S', (N, N, N, N, -10, 20.0)),
                 ((10, 0), 'PT10M', (N, N, N, N, 10, N)),
                 ((10, 0, 0), 'PT10H', (N, N, N, 10, N, N)),
-                ((10, 0L, 0, 0), 'P10D', (N, N, 10, N, N, N)),
+                ((10, 0, 0, 0), 'P10D', (N, N, 10, N, N, N)),
                 ((10, 0, 0, 0, 0), 'P10M', (N, 10, N, N, N, N)),
-                ((10, 0, 0, 0L, 0, 0), 'P10Y', (10, N, N, N, N, N)),
+                ((10, 0, 0, 0, 0, 0), 'P10Y', (10, N, N, N, N, N)),
                 ((-10, 0, 0, 0, 0, 0), '-P10Y', (-10, N, N, N, N, N)),
-                ((10, 0, 0, 0, 0, 20L), 'P10YT20S', (10, N, N, N, N, 20.0,)),
+                ((10, 0, 0, 0, 0, 20), 'P10YT20S', (10, N, N, N, N, 20.0,)),
                 ((1, 2, 3, 4, 5, 6.75), 'P1Y2M3DT4H5M6.75S',
                     (1, 2, 3, 4, 5, 6.75)),
                 ((-1, 2, 3, 4, 5, 6.75), '-P1Y2M3DT4H5M6.75S',
@@ -1771,13 +1749,13 @@ class SOAPTestCase(unittest.TestCase):
                 ((1347, 0, N, 0, 0), 'P1347M', (N, 1347, N, N, N, N)),
                 ((-1347, 0, 0, 0, N), '-P1347M', (N, -1347, N, N, N, N)),
                 ((1e15, 0, 0, 0, 0), 'P1000000000000000M',
-                    (N, 1000000000000000L, N, N, N, N)),
+                    (N, 1000000000000000, N, N, N, N)),
                 ((-1e15, 0, 0, 0, 0), '-P1000000000000000M',
-                    (N, -1000000000000000L, N, N, N, N)),
-                ((1000000000000000L, 0, 0, 0, 0), 'P1000000000000000M',
-                    (N, 1000000000000000L, N, N, N, N)),
-                ((-1000000000000000L, 0, 0, 0, 0), '-P1000000000000000M',
-                    (N, -1000000000000000L, N, N, N, N)),
+                    (N, -1000000000000000, N, N, N, N)),
+                ((1000000000000000, 0, 0, 0, 0), 'P1000000000000000M',
+                    (N, 1000000000000000, N, N, N, N)),
+                ((-1000000000000000, 0, 0, 0, 0), '-P1000000000000000M',
+                    (N, -1000000000000000, N, N, N, N)),
             )
         parsedata = (
                 ('hello', N),
@@ -1831,7 +1809,7 @@ class SOAPTestCase(unittest.TestCase):
             )
         gooddata = \
             (
-                (1L, '1970-01-01T00:00:01Z', (1970, 1, 1, 0, 0, 1.0)),
+                (1, '1970-01-01T00:00:01Z', (1970, 1, 1, 0, 0, 1.0)),
                 (1.5, '1970-01-01T00:00:01.5Z', (1970, 1, 1, 0, 0, 1.5)),
                 ((-1, 2, 3, 4, 5, 6), '-0001-02-03T04:05:06Z',
                     (-1, 2, 3, 4, 5, 6.0)),
@@ -1845,21 +1823,21 @@ class SOAPTestCase(unittest.TestCase):
                     (1970, 2, 3, 4, 5, 6.0)),
                 ((-1970, 2, 3, 4, 5, 6), '-1970-02-03T04:05:06Z',
                     (-1970, 2, 3, 4, 5, 6.0)),
-                ((1970L, 2.0, 3.0, 4L, 5L, 6.875), '1970-02-03T04:05:06.875Z',
+                ((1970, 2.0, 3.0, 4, 5, 6.875), '1970-02-03T04:05:06.875Z',
                     (1970, 2, 3, 4, 5, 6.875)),
-                ((11990, 1, 2, 3, 4L, 5.25, 0, 0, 0),
+                ((11990, 1, 2, 3, 4, 5.25, 0, 0, 0),
                     '11990-01-02T03:04:05.25Z',
                     (11990, 1, 2, 3, 4, 5.25)),
-                ((1e15, 1, 2, 3, 4L, 5.25, 0, 0, 0),
+                ((1e15, 1, 2, 3, 4, 5.25, 0, 0, 0),
                     '1000000000000000-01-02T03:04:05.25Z',
                     (1e15, 1, 2, 3, 4, 5.25)),
-                ((-1e15, 1, 2, 3, 4L, 5.25, 0, 0, 0),
+                ((-1e15, 1, 2, 3, 4, 5.25, 0, 0, 0),
                     '-1000000000000000-01-02T03:04:05.25Z',
                     (-1e15, 1, 2, 3, 4, 5.25)),
-                ((1000000000000000L, 1, 2, 3, 4L, 5.25, 0, 0, 0),
+                ((1000000000000000, 1, 2, 3, 4, 5.25, 0, 0, 0),
                     '1000000000000000-01-02T03:04:05.25Z',
                     (1e15, 1, 2, 3, 4, 5.25)),
-                ((-1000000000000000L, 1, 2, 3, 4L, 5.25, 0, 0, 0),
+                ((-1000000000000000, 1, 2, 3, 4, 5.25, 0, 0, 0),
                     '-1000000000000000-01-02T03:04:05.25Z',
                     (-1e15, 1, 2, 3, 4, 5.25)),
             )
@@ -1960,7 +1938,7 @@ class SOAPTestCase(unittest.TestCase):
             )
         gooddata = \
             (
-                (1L, '1970-01-01T00:00:01Z', (1970, 1, 1, 0, 0, 1.0)),
+                (1, '1970-01-01T00:00:01Z', (1970, 1, 1, 0, 0, 1.0)),
                 (1.5, '1970-01-01T00:00:01.5Z', (1970, 1, 1, 0, 0, 1.5)),
                 (1e9, '2001-09-09T01:46:40Z', (2001, 9, 9, 1, 46, 40.0)),
                 ((1, 1, 2, 3, 4, 5), '-01-01-02T03:04:05Z',
@@ -1975,19 +1953,19 @@ class SOAPTestCase(unittest.TestCase):
                     (100, 1, 2, 3, 4, 5)),
                 ((-100, 1, 2, 3, 4, 5), '-0100-01-02T03:04:05Z',
                     (-100, 1, 2, 3, 4, 5)),
-                ((1970L, 1, 2, 3, 4, 5), '1970-01-02T03:04:05Z',
+                ((1970, 1, 2, 3, 4, 5), '1970-01-02T03:04:05Z',
                     (1970, 1, 2, 3, 4, 5)),
-                ((1970L, 1, 2L, 3, 4.0, 5.25), '1970-01-02T03:04:05.25Z',
+                ((1970, 1, 2, 3, 4.0, 5.25), '1970-01-02T03:04:05.25Z',
                     (1970, 1, 2, 3, 4, 5.25)),
-                ((11990, 1, 2, 3L, 4, 5.25), '11990-01-02T03:04:05.25Z',
+                ((11990, 1, 2, 3, 4, 5.25), '11990-01-02T03:04:05.25Z',
                     (11990, 1, 2, 3, 4, 5.25)),
-                ((1e15, 1, 2, 3L, 4, 5.25),
+                ((1e15, 1, 2, 3, 4, 5.25),
                     '1000000000000000-01-02T03:04:05.25Z',
                     (1e15, 1, 2, 3, 4, 5.25)),
-                ((-1e15, 1, 2, 3L, 4, 5.25),
+                ((-1e15, 1, 2, 3, 4, 5.25),
                     '-1000000000000000-01-02T03:04:05.25Z',
                     (-1e15, 1, 2, 3, 4, 5.25)),
-                ((N, 1, 2, 3, 4L, 5.25), '---01-02T03:04:05.25Z',
+                ((N, 1, 2, 3, 4, 5.25), '---01-02T03:04:05.25Z',
                     (N, 1, 2, 3, 4, 5.25)),
                 ((N, N, 2, 3, 4, 5.25, 0, 0, 0), '-----02T03:04:05.25Z',
                     (N, N, 2, 3, 4, 5.25)),
@@ -2154,13 +2132,13 @@ class SOAPTestCase(unittest.TestCase):
             )
         gooddata = \
             (
-                (1L, '00:00:01Z', (0, 0, 1.0)),
+                (1, '00:00:01Z', (0, 0, 1.0)),
                 (1.5, '00:00:01.5Z', (0, 0, 1.5)),
                 (3661.5, '01:01:01.5Z', (1, 1, 1.5)),
                 (86399.75, '23:59:59.75Z', (23, 59, 59.75)),
                 ((1,), '01:00:00Z', (1, 0, 0)),
                 ((1, 2), '01:02:00Z', (1, 2, 0)),
-                ((10L, 20.0, 30), '10:20:30Z', (10, 20, 30.0)),
+                ((10, 20.0, 30), '10:20:30Z', (10, 20, 30.0)),
             )
         parsedata = \
             (
@@ -2230,7 +2208,7 @@ class SOAPTestCase(unittest.TestCase):
             )
         gooddata = \
             (
-                (1L, '1970-01-01Z', (1970, 1, 1)),
+                (1, '1970-01-01Z', (1970, 1, 1)),
                 (1.5, '1970-01-01Z', (1970, 1, 1)),
                 ((2,), '0002-01-01Z', (2, 1, 1)),
                 ((2, 3), '0002-03-01Z', (2, 3, 1)),
@@ -2240,13 +2218,13 @@ class SOAPTestCase(unittest.TestCase):
                 ((100, 2, 3), '0100-02-03Z', (100, 2, 3)),
                 ((1970, 2, 3), '1970-02-03Z', (1970, 2, 3)),
                 ((-1970, 2, 3), '-1970-02-03Z', (-1970, 2, 3)),
-                ((1970L, 2.0, 3.0), '1970-02-03Z', (1970, 2, 3)),
-                ((11990, 1L, 2), '11990-01-02Z', (11990, 1, 2)),
+                ((1970, 2.0, 3.0), '1970-02-03Z', (1970, 2, 3)),
+                ((11990, 1, 2), '11990-01-02Z', (11990, 1, 2)),
                 ((1e15, 1, 2), '1000000000000000-01-02Z', (1e15, 1, 2)),
                 ((-1e15, 1, 2), '-1000000000000000-01-02Z', (-1e15, 1, 2)),
-                ((1000000000000000L, 1, 2), '1000000000000000-01-02Z',
+                ((1000000000000000, 1, 2), '1000000000000000-01-02Z',
                     (1e15, 1, 2)),
-                ((-1000000000000000L, 1, 2), '-1000000000000000-01-02Z',
+                ((-1000000000000000, 1, 2), '-1000000000000000-01-02Z',
                     (-1e15, 1, 2)),
             )
         parsedata = \
@@ -2338,7 +2316,7 @@ class SOAPTestCase(unittest.TestCase):
             )
         gooddata = \
             (
-                (1L, '1970-01Z', (1970, 1)),
+                (1, '1970-01Z', (1970, 1)),
                 (1.5, '1970-01Z', (1970, 1)),
                 ((2,), '0002-01Z', (2, 1)),
                 ((2, 3), '0002-03Z', (2, 3)),
@@ -2347,12 +2325,12 @@ class SOAPTestCase(unittest.TestCase):
                 ((100, 2), '0100-02Z', (100, 2)),
                 ((1970, 2), '1970-02Z', (1970, 2)),
                 ((-1970, 2), '-1970-02Z', (-1970, 2)),
-                ((1970L, 2.0), '1970-02Z', (1970, 2)),
-                ((11990, 1L), '11990-01Z', (11990, 1)),
+                ((1970, 2.0), '1970-02Z', (1970, 2)),
+                ((11990, 1), '11990-01Z', (11990, 1)),
                 ((1e15, 1), '1000000000000000-01Z', (1e15, 1)),
                 ((-1e15, 1), '-1000000000000000-01Z', (-1e15, 1)),
-                ((1000000000000000L, 1), '1000000000000000-01Z', (1e15, 1)),
-                ((-1000000000000000L, 1), '-1000000000000000-01Z', (-1e15, 1)),
+                ((1000000000000000, 1), '1000000000000000-01Z', (1e15, 1)),
+                ((-1000000000000000, 1), '-1000000000000000-01Z', (-1e15, 1)),
             )
         parsedata = \
             (
@@ -2409,17 +2387,17 @@ class SOAPTestCase(unittest.TestCase):
             )
         gooddata = \
             (
-                (1L, '0001Z', 1),
+                (1, '0001Z', 1),
                 (10, '0010Z', 10),
                 (100, '0100Z', 100),
                 (1970, '1970Z', 1970),
                 (-1970, '-1970Z', -1970),
-                (1970L, '1970Z', 1970),
+                (1970, '1970Z', 1970),
                 (11990.0, '11990Z', 11990),
                 (1e15, '1000000000000000Z', 1e15),
                 (-1e15, '-1000000000000000Z', -1e15),
-                (1000000000000000L, '1000000000000000Z', 1e15),
-                (-1000000000000000L, '-1000000000000000Z', -1e15),
+                (1000000000000000, '1000000000000000Z', 1e15),
+                (-1000000000000000, '-1000000000000000Z', -1e15),
             )
         parsedata = \
             (
@@ -2465,17 +2443,17 @@ class SOAPTestCase(unittest.TestCase):
             )
         gooddata = \
             (
-                (1L, '01Z', 1),
+                (1, '01Z', 1),
                 (10, '10Z', 10),
                 (100, '100Z', 100),
                 (19, '19Z', 19),
                 (-19, '-19Z', -19),
-                (19L, '19Z', 19),
+                (19, '19Z', 19),
                 (119.0, '119Z', 119),
                 (1e15, '1000000000000000Z', 1e15),
                 (-1e15, '-1000000000000000Z', -1e15),
-                (1000000000000000L, '1000000000000000Z', 1e15),
-                (-1000000000000000L, '-1000000000000000Z', -1e15),
+                (1000000000000000, '1000000000000000Z', 1e15),
+                (-1000000000000000, '-1000000000000000Z', -1e15),
             )
         parsedata = \
             (
@@ -2537,7 +2515,7 @@ class SOAPTestCase(unittest.TestCase):
             )
         gooddata = \
             (
-                (1L, '--01-01Z', (1, 1)),
+                (1, '--01-01Z', (1, 1)),
                 (1.5, '--01-01Z', (1, 1)),
                 ((2,), '--02-01Z', (2, 1)),
                 ((2, 3), '--02-03Z', (2, 3)),
@@ -2615,7 +2593,7 @@ class SOAPTestCase(unittest.TestCase):
             )
         gooddata = \
             (
-                (1L, '--01--Z', 1),
+                (1, '--01--Z', 1),
                 ((2,), '--02--Z', 2),
                 ((10,), '--10--Z', 10),
             )
@@ -2665,7 +2643,7 @@ class SOAPTestCase(unittest.TestCase):
             )
         gooddata = \
             (
-                (1L, '---01Z', 1),
+                (1, '---01Z', 1),
                 ((2,), '---02Z', 2),
                 ((10,), '---10Z', 10),
             )
@@ -2709,9 +2687,8 @@ class SOAPTestCase(unittest.TestCase):
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % \
-                        (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                        (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except ValueError:
@@ -2719,24 +2696,24 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (10, 23L, 1111111111111111111111111111111111111111111111111111L):
+        for i in (10, 23, 1111111111111111111111111111111111111111111111111111):
             x = integerType(i)
             d = x._marshalData()
 
             if d != str(i):
-                raise AssertionError, "expected %d, got %s" % (i, d)
+                raise AssertionError("expected %d, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i:
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
         test = (('hello', N), ('3.14', N), ('10 000', N),
             ('1', 1),
-            ('123456789012345678901234567890', 123456789012345678901234567890L),
+            ('123456789012345678901234567890', 123456789012345678901234567890),
             (ws + '12' + ws, 12))
 
         for i in test:
@@ -2745,15 +2722,14 @@ class SOAPTestCase(unittest.TestCase):
                     i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != N:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def testNonPositiveInteger(self):
         # First some things that shouldn't be valid
@@ -2762,9 +2738,8 @@ class SOAPTestCase(unittest.TestCase):
             for i in test:
                 try:
                     t(i)
-                    raise AssertionError, \
-                        "instantiated a t with a bad value (%s)" % \
-                            (t.__name__, repr(i))
+                    raise AssertionError("instantiated a t with a bad value (%s)" % \
+                            (t.__name__, repr(i)))
                 except AssertionError:
                     raise
                 except ValueError:
@@ -2772,26 +2747,26 @@ class SOAPTestCase(unittest.TestCase):
 
             # Now some things that should
 
-            for i in (0, -23L, -1111111111111111111111111111111111111111111111111L):
+            for i in (0, -23, -1111111111111111111111111111111111111111111111111):
                 x = t(i)
                 d = x._marshalData()
 
                 if d != str(i):
-                    raise AssertionError, "expected %d, got %s" % (i, d)
+                    raise AssertionError("expected %d, got %s" % (i, d))
 
                 y = buildSOAP(x)
                 z = parseSOAPRPC(y)
 
                 if z != i:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
 
             # Now test parsing, both valid and invalid
 
             test = (('hello', N), ('3.14', N), ('-10 000', N), ('1', N),
                 ('0', 0),
                 ('-1', -1),
-                ('-123456789012345678901234567890', -123456789012345678901234567890L),
+                ('-123456789012345678901234567890', -123456789012345678901234567890),
                 (ws + '-12' + ws, -12))
 
             for i in test:
@@ -2804,15 +2779,14 @@ class SOAPTestCase(unittest.TestCase):
                     z = parseSOAPRPC(self.build_xml(t._validURIs[0], n, i[0]))
 
                     if z != i[1]:
-                        raise AssertionError, "%s: expected %s, got %s" % \
-                            (i[0], i[1], repr(z))
+                        raise AssertionError("%s: expected %s, got %s" % \
+                            (i[0], i[1], repr(z)))
                 except AssertionError:
                     raise
                 except:
                     if i[1] != N:
-                        raise AssertionError, \
-                            "parsing %s as %s threw exception %s:%s" % \
-                            (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                        raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                            (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def testNegativeInteger(self):
         # First some things that shouldn't be valid
@@ -2821,9 +2795,8 @@ class SOAPTestCase(unittest.TestCase):
             for i in test:
                 try:
                     t(i)
-                    raise AssertionError, \
-                        "instantiated a %s with a bad value (%s)" % \
-                            (t.__name__, repr(i))
+                    raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                            (t.__name__, repr(i)))
                 except AssertionError:
                     raise
                 except ValueError:
@@ -2831,26 +2804,26 @@ class SOAPTestCase(unittest.TestCase):
 
             # Now some things that should
 
-            for i in (-1, -23L, -111111111111111111111111111111111111111111111111L):
+            for i in (-1, -23, -111111111111111111111111111111111111111111111111):
                 x = t(i)
                 d = x._marshalData()
 
                 if d != str(i):
-                    raise AssertionError, "expected %d, got %s" % (i, d)
+                    raise AssertionError("expected %d, got %s" % (i, d))
 
                 y = buildSOAP(x)
                 z = parseSOAPRPC(y)
 
                 if z != i:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
 
             # Now test parsing, both valid and invalid
 
             test = (('hello', N), ('3.14', N), ('-10 000', N), ('1', N),
                 ('0', N),
                 ('-1', -1),
-                ('-123456789012345678901234567890', -123456789012345678901234567890L),
+                ('-123456789012345678901234567890', -123456789012345678901234567890),
                 (ws + '-12' + ws, -12))
 
             for i in test:
@@ -2863,27 +2836,25 @@ class SOAPTestCase(unittest.TestCase):
                     z = parseSOAPRPC(self.build_xml(t._validURIs[0], n, i[0]))
 
                     if z != i[1]:
-                        raise AssertionError, "expected %s, got %s" % (i[1], repr(z))
+                        raise AssertionError("expected %s, got %s" % (i[1], repr(z)))
                 except AssertionError:
                     raise
                 except:
                     if i[1] != N:
-                        raise AssertionError, \
-                            "parsing %s as %s threw exception %s:%s" % \
-                            (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                        raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                            (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def testLong(self):
         # First some things that shouldn't be valid
         test = ('hello', 3.14, (), [], {},
-            -9223372036854775809L, 9223372036854775808L)
+            -9223372036854775809, 9223372036854775808)
         t = longType
 
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % \
-                        (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                        (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except ValueError:
@@ -2891,26 +2862,26 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (-1, -23L, -9223372036854775808L, 9223372036854775807L):
+        for i in (-1, -23, -9223372036854775808, 9223372036854775807):
             x = t(i)
             d = x._marshalData()
 
             if d != str(i):
-                raise AssertionError, "expected %d, got %s" % (i, d)
+                raise AssertionError("expected %d, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i:
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
         test = (('hello', N), ('3.14', N), ('-10 000', N),
             ('-9223372036854775809', N), ('9223372036854775808', N),
             ('-1', -1), ('0', 0), ('1', 1),
-            ('-9223372036854775808', -9223372036854775808L),
-            ('9223372036854775807', 9223372036854775807L),
+            ('-9223372036854775808', -9223372036854775808),
+            ('9223372036854775807', 9223372036854775807),
             (ws + '-12' + ws, -12))
 
         for i in test:
@@ -2918,27 +2889,25 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != N:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def testInt(self):
         # First some things that shouldn't be valid
-        test = ('hello', 3.14, (), [], {}, -2147483649L, 2147483648L)
+        test = ('hello', 3.14, (), [], {}, -2147483649, 2147483648)
         t = intType
 
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % \
-                        (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                        (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except ValueError:
@@ -2946,25 +2915,25 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (-1, -23L, -2147483648L, 2147483647):
+        for i in (-1, -23, -2147483648, 2147483647):
             x = intType(i)
             d = x._marshalData()
 
             if d != str(i):
-                raise AssertionError, "expected %d, got %s" % (i, d)
+                raise AssertionError("expected %d, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i:
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
         test = (('hello', N), ('3.14', N), ('-10 000', N),
             ('-2147483649', N), ('2147483648', N),
             ('-1', -1), ('0', 0), ('1', 1),
-            ('-2147483648', -2147483648L),
+            ('-2147483648', -2147483648),
             ('2147483647', 2147483647),
             (ws + '-12' + ws, -12))
 
@@ -2973,15 +2942,14 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != N:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])                
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))                
 
     def testShort(self):
         # First some things that shouldn't be valid
@@ -2991,9 +2959,8 @@ class SOAPTestCase(unittest.TestCase):
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % \
-                        (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                        (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except ValueError:
@@ -3001,18 +2968,18 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (-1, -23L, -32768, 32767):
+        for i in (-1, -23, -32768, 32767):
             x = t(i)
             d = x._marshalData()
 
             if d != str(i):
-                raise AssertionError, "expected %d, got %s" % (i, d)
+                raise AssertionError("expected %d, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i:
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
@@ -3028,15 +2995,14 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != N:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def testByte(self):
         # First some things that shouldn't be valid
@@ -3046,9 +3012,8 @@ class SOAPTestCase(unittest.TestCase):
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % \
-                        (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                        (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except ValueError:
@@ -3056,18 +3021,18 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (-1, -23L, -128, 127):
+        for i in (-1, -23, -128, 127):
             x = t(i)
             d = x._marshalData()
 
             if d != str(i):
-                raise AssertionError, "expected %d, got %s" % (i, d)
+                raise AssertionError("expected %d, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i:
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
@@ -3083,15 +3048,14 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != N:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def testNonNegativeInteger(self):
         # First some things that shouldn't be valid
@@ -3100,9 +3064,8 @@ class SOAPTestCase(unittest.TestCase):
             for i in test:
                 try:
                     t(i)
-                    raise AssertionError, \
-                        "instantiated a %s with a bad value (%s)" % \
-                            (t.__name__, repr(i))
+                    raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                            (t.__name__, repr(i)))
                 except AssertionError:
                     raise
                 except ValueError:
@@ -3110,25 +3073,25 @@ class SOAPTestCase(unittest.TestCase):
 
             # Now some things that should
 
-            for i in (0, 1, 23L, 111111111111111111111111111111111111111111111111L):
+            for i in (0, 1, 23, 111111111111111111111111111111111111111111111111):
                 x = t(i)
                 d = x._marshalData()
 
                 if d != str(i):
-                    raise AssertionError, "expected %d, got %s" % (i, d)
+                    raise AssertionError("expected %d, got %s" % (i, d))
 
                 y = buildSOAP(x)
                 z = parseSOAPRPC(y)
 
                 if z != i:
-                    raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                    raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
             # Now test parsing, both valid and invalid
 
             test = (('hello', N), ('3.14', N), ('-10 000', N), ('-1', N),
                 ('0', 0),
                 ('1', 1),
-                ('123456789012345678901234567890', 123456789012345678901234567890L),
+                ('123456789012345678901234567890', 123456789012345678901234567890),
                 (ws + '12' + ws, 12))
 
             for i in test:
@@ -3141,27 +3104,25 @@ class SOAPTestCase(unittest.TestCase):
                     z = parseSOAPRPC(self.build_xml(t._validURIs[0], n, i[0]))
 
                     if z != i[1]:
-                        raise AssertionError, "%s: expected %s, got %s" % \
-                            (i[0], i[1], repr(z))
+                        raise AssertionError("%s: expected %s, got %s" % \
+                            (i[0], i[1], repr(z)))
                 except AssertionError:
                     raise
                 except:
                     if i[1] != N:
-                        raise AssertionError, \
-                            "parsing %s as %s threw exception %s:%s" % \
-                            (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                        raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                            (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def testUnsignedLong(self):
         # First some things that shouldn't be valid
-        test = ('hello', 3.14, (), [], {}, -42, -1, 18446744073709551616L)
+        test = ('hello', 3.14, (), [], {}, -42, -1, 18446744073709551616)
         t = unsignedLongType
 
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % \
-                        (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                        (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except ValueError:
@@ -3169,25 +3130,25 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (0, 23L, 18446744073709551615L):
+        for i in (0, 23, 18446744073709551615):
             x = t(i)
             d = x._marshalData()
 
             if d != str(i):
-                raise AssertionError, "expected %d, got %s" % (i, d)
+                raise AssertionError("expected %d, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i:
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
         test = (('hello', N), ('3.14', N), ('-10 000', N), ('-1', N),
             ('18446744073709551616', N),
             ('0', 0), ('1', 1),
-            ('18446744073709551615', 18446744073709551615L),
+            ('18446744073709551615', 18446744073709551615),
             (ws + '12' + ws, 12))
 
         for i in test:
@@ -3195,27 +3156,25 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != N:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def testUnsignedInt(self):
         # First some things that shouldn't be valid
-        test = ('hello', 3.14, (), [], {}, -42, -1, 4294967296L)
+        test = ('hello', 3.14, (), [], {}, -42, -1, 4294967296)
         t = unsignedIntType
 
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % \
-                        (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                        (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except ValueError:
@@ -3223,25 +3182,25 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (0, 23L, 4294967295L):
+        for i in (0, 23, 4294967295):
             x = t(i)
             d = x._marshalData()
 
             if d != str(i):
-                raise AssertionError, "expected %d, got %s" % (i, d)
+                raise AssertionError("expected %d, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i:
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
         test = (('hello', N), ('3.14', N), ('-10 000', N), ('-1', N),
             ('4294967296', N),
             ('0', 0), ('1', 1),
-            ('4294967295', 4294967295L),
+            ('4294967295', 4294967295),
             (ws + '12' + ws, 12))
 
         for i in test:
@@ -3249,15 +3208,14 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != N:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
                 
     def testUnsignedShort(self):
         # First some things that shouldn't be valid
@@ -3267,9 +3225,8 @@ class SOAPTestCase(unittest.TestCase):
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % \
-                        (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                        (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except ValueError:
@@ -3277,18 +3234,18 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (0, 23L, 65535):
+        for i in (0, 23, 65535):
             x = t(i)
             d = x._marshalData()
 
             if d != str(i):
-                raise AssertionError, "expected %d, got %s" % (i, d)
+                raise AssertionError("expected %d, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i:
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
@@ -3303,15 +3260,14 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != N:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def testUnsignedByte(self):
         # First some things that shouldn't be valid
@@ -3321,9 +3277,8 @@ class SOAPTestCase(unittest.TestCase):
         for i in test:
             try:
                 t(i)
-                raise AssertionError, \
-                    "instantiated a %s with a bad value (%s)" % \
-                        (t.__name__, repr(i))
+                raise AssertionError("instantiated a %s with a bad value (%s)" % \
+                        (t.__name__, repr(i)))
             except AssertionError:
                 raise
             except ValueError:
@@ -3331,18 +3286,18 @@ class SOAPTestCase(unittest.TestCase):
 
         # Now some things that should
 
-        for i in (0, 23L, 255):
+        for i in (0, 23, 255):
             x = t(i)
             d = x._marshalData()
 
             if d != str(i):
-                raise AssertionError, "expected %d, got %s" % (i, d)
+                raise AssertionError("expected %d, got %s" % (i, d))
 
             y = buildSOAP(x)
             z = parseSOAPRPC(y)
 
             if z != i:
-                raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
         # Now test parsing, both valid and invalid
 
@@ -3357,15 +3312,14 @@ class SOAPTestCase(unittest.TestCase):
                 z = parseSOAPRPC(self.build_xml(t._validURIs[0], t.__name__[:-4], i[0]))
 
                 if z != i[1]:
-                    raise AssertionError, "%s: expected %s, got %s" % \
-                        (i[0], i[1], repr(z))
+                    raise AssertionError("%s: expected %s, got %s" % \
+                        (i[0], i[1], repr(z)))
             except AssertionError:
                 raise
             except:
                 if i[1] != N:
-                    raise AssertionError, \
-                        "parsing %s as %s threw exception %s:%s" % \
-                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                    raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                        (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def testPositiveInteger(self):
         # First some things that shouldn't be valid
@@ -3374,9 +3328,8 @@ class SOAPTestCase(unittest.TestCase):
             for i in test:
                 try:
                     t(i)
-                    raise AssertionError, \
-                        "instantiated a t with a bad value (%s)" % \
-                            (t.__name__, repr(i))
+                    raise AssertionError("instantiated a t with a bad value (%s)" % \
+                            (t.__name__, repr(i)))
                 except AssertionError:
                     raise
                 except ValueError:
@@ -3384,24 +3337,24 @@ class SOAPTestCase(unittest.TestCase):
 
             # Now some things that should
 
-            for i in (1, 23L, 1111111111111111111111111111111111111111111111111111L):
+            for i in (1, 23, 1111111111111111111111111111111111111111111111111111):
                 x = t(i)
                 d = x._marshalData()
 
                 if d != str(i):
-                    raise AssertionError, "expected %d, got %s" % (i, d)
+                    raise AssertionError("expected %d, got %s" % (i, d))
 
                 y = buildSOAP(x)
                 z = parseSOAPRPC(y)
 
                 if z != i:
-                    raise AssertionError, "expected %s, got %s" % (repr(i), repr(z))
+                    raise AssertionError("expected %s, got %s" % (repr(i), repr(z)))
 
             # Now test parsing, both valid and invalid
 
             test = (('hello', N), ('3.14', N), ('-10 000', N), ('-1', N),
                 ('0', N), ('1', 1),
-                ('123456789012345678901234567890', 123456789012345678901234567890L),
+                ('123456789012345678901234567890', 123456789012345678901234567890),
                 (ws + '12' + ws, 12))
 
             for i in test:
@@ -3414,15 +3367,14 @@ class SOAPTestCase(unittest.TestCase):
                     z = parseSOAPRPC(self.build_xml(t._validURIs[0], n, i[0]))
 
                     if z != i[1]:
-                        raise AssertionError, "%s: expected %s, got %s" % \
-                            (i[0], i[1], repr(z))
+                        raise AssertionError("%s: expected %s, got %s" % \
+                            (i[0], i[1], repr(z)))
                 except AssertionError:
                     raise
                 except:
                     if i[1] != N:
-                        raise AssertionError, \
-                            "parsing %s as %s threw exception %s:%s" % \
-                            (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1])
+                        raise AssertionError("parsing %s as %s threw exception %s:%s" % \
+                            (i[0], t.__name__, sys.exc_info()[0], sys.exc_info()[1]))
 
     def testUntyped(self):
         # Make sure untypedType really isn't typed
@@ -3432,8 +3384,8 @@ class SOAPTestCase(unittest.TestCase):
         x = buildSOAP((a, b))
         #print "x=",x
 
-        self.failUnless(x.find('<a xsi:type="xsd:string" SOAP-ENC:root="1">hello</a>') != -1)
-        self.failUnless(x.find('<b SOAP-ENC:root="1">earth</b>') != -1)
+        self.assertTrue(x.find('<a xsi:type="xsd:string" SOAP-ENC:root="1">hello</a>') != -1)
+        self.assertTrue(x.find('<b SOAP-ENC:root="1">earth</b>') != -1)
         
     # Now some Array tests
     def testArray(self):
@@ -3457,7 +3409,7 @@ class SOAPTestCase(unittest.TestCase):
 
         x = parseSOAPRPC(xml)
 
-        self.assertEquals( x ,  [None, None, [1, 2], [3, 4]])
+        self.assertEqual( x ,  [None, None, [1, 2], [3, 4]])
 
         xml = env % '''<SOAP-ENV:Body>
 <_1 SOAP-ENC:arrayType="xsd:int[3,4,2]" SOAP-ENC:offset="[17]" xsi:type="SOAP-ENC:Array">
@@ -3473,7 +3425,7 @@ class SOAPTestCase(unittest.TestCase):
 
         x = parseSOAPRPC(xml)
 
-        self.assertEquals( x ,  [
+        self.assertEqual( x ,  [
             [[None, None], [None, None], [None, None], [None, None]],
             [[None, None], [None, None], [None, None], [None, None]],
             [[None, 1], [2, 3], [4, 5], [6, 7]]
@@ -3493,10 +3445,10 @@ class SOAPTestCase(unittest.TestCase):
 
         x = parseSOAPRPC(xml)
 
-        self.assertEquals( x ,  [
-            [[None, 1L], [None, None], [None, None], [6L, None]],
-            [[None, None], [None, None], [None, 13L], [None, None]],
-            [[None, 17L], [None, None], [None, None], [-22L, 23L]]
+        self.assertEqual( x ,  [
+            [[None, 1], [None, None], [None, None], [6, None]],
+            [[None, None], [None, None], [None, 13], [None, None]],
+            [[None, 17], [None, None], [None, None], [-22, 23]]
         ])
 
         xml = env % '''<SOAP-ENV:Body>
@@ -3510,7 +3462,7 @@ class SOAPTestCase(unittest.TestCase):
 
         x = parseSOAPRPC(xml)
 
-        self.assertEquals( x ,  [0, 1, 2, 3])
+        self.assertEqual( x ,  [0, 1, 2, 3])
 
         xml = env % '''<SOAP-ENV:Body>
 <_1 SOAP-ENC:arrayType="xsd:int[2,3,4]" SOAP-ENC:offset="[23]" xsi:type="SOAP-ENC:Array">
@@ -3519,7 +3471,7 @@ class SOAPTestCase(unittest.TestCase):
 
         x = parseSOAPRPC(xml)
 
-        self.assertEquals( x ,  [
+        self.assertEqual( x ,  [
             [
                 [None, None, None, None],
                 [None, None, None, None],
@@ -3541,7 +3493,7 @@ class SOAPTestCase(unittest.TestCase):
 
         try:
             x = parseSOAPRPC(xml)
-            raise AssertionError, "full array parsed"
+            raise AssertionError("full array parsed")
         except AssertionError:
             raise
         except:
@@ -3554,7 +3506,7 @@ class SOAPTestCase(unittest.TestCase):
 
         try:
             x = parseSOAPRPC(xml)
-            raise AssertionError, "array with bad dimension (0) parsed"
+            raise AssertionError("array with bad dimension (0) parsed")
         except AssertionError:
             raise
         except:
@@ -3567,7 +3519,7 @@ class SOAPTestCase(unittest.TestCase):
 
         try:
             x = parseSOAPRPC(xml)
-            raise AssertionError, "array with bad dimension (negative) parsed"
+            raise AssertionError("array with bad dimension (negative) parsed")
         except AssertionError:
             raise
         except:
@@ -3580,7 +3532,7 @@ class SOAPTestCase(unittest.TestCase):
 
         try:
             x = parseSOAPRPC(xml)
-            raise AssertionError, "array with bad dimension (non-integral) parsed"
+            raise AssertionError("array with bad dimension (non-integral) parsed")
         except AssertionError:
             raise
         except:
@@ -3593,7 +3545,7 @@ class SOAPTestCase(unittest.TestCase):
 
         try:
             x = parseSOAPRPC(xml)
-            raise AssertionError, "array with bad dimension (non-numeric) parsed"
+            raise AssertionError("array with bad dimension (non-numeric) parsed")
         except AssertionError:
             raise
         except:
@@ -3606,7 +3558,7 @@ class SOAPTestCase(unittest.TestCase):
 
         try:
             x = parseSOAPRPC(xml)
-            raise AssertionError, "array with too large offset parsed"
+            raise AssertionError("array with too large offset parsed")
         except AssertionError:
             raise
         except:
@@ -3619,7 +3571,7 @@ class SOAPTestCase(unittest.TestCase):
 
         try:
             x = parseSOAPRPC(xml)
-            raise AssertionError, "array with too large offset parsed"
+            raise AssertionError("array with too large offset parsed")
         except AssertionError:
             raise
         except:
@@ -3634,7 +3586,7 @@ class SOAPTestCase(unittest.TestCase):
 
         try:
             x = parseSOAPRPC(xml)
-            raise AssertionError, "full array parsed"
+            raise AssertionError("full array parsed")
         except AssertionError:
             raise
         except:
@@ -3649,7 +3601,7 @@ class SOAPTestCase(unittest.TestCase):
 
         x = parseSOAPRPC(xml)
 
-        self.assertEquals( x ,  [3, 4])
+        self.assertEqual( x ,  [3, 4])
 
         xml = env % '''<SOAP-ENV:Body>
 <SOAP-ENC:Array SOAP-ENC:arrayType="xsd:ur-type[4]">
@@ -3666,7 +3618,7 @@ Brought Death into the World, and all our woe,</thing>
 
         x = parseSOAPRPC(xml)
 
-        self.assertEquals( x ,  [12345, 6.789, '''Of Mans First Disobedience, and the Fruit
+        self.assertEqual( x ,  [12345, 6.789, '''Of Mans First Disobedience, and the Fruit
 Of that Forbidden Tree, whose mortal tast
 Brought Death into the World, and all our woe,''',
       'http://www.dartmouth.edu/~milton/reading_room/'])
@@ -3707,7 +3659,7 @@ Brought Death into the World, and all our woe,''',
 
         x = parseSOAPRPC(xml)
 
-        self.assertEquals( x ,  [['r1c1', 'r1c2', 'r1c3'],
+        self.assertEqual( x ,  [['r1c1', 'r1c2', 'r1c3'],
                                  ['r2c1', 'r2c2'], ['r2c1', 'r2c2']])
 
         xml = env % '''<SOAP-ENV:Body>
@@ -3723,7 +3675,7 @@ Brought Death into the World, and all our woe,''',
 
         x = parseSOAPRPC(xml)
 
-        self.assertEquals( x ,  [['r1c1', 'r1c2', 'r1c3'], ['r2c1', 'r2c2', 'r2c3']])
+        self.assertEqual( x ,  [['r1c1', 'r1c2', 'r1c3'], ['r2c1', 'r2c2', 'r2c3']])
 
         xml = env % '''<SOAP-ENV:Body>
 <SOAP-ENC:Array SOAP-ENC:arrayType="xsd:string[5]" SOAP-ENC:offset="[2]">
@@ -3734,7 +3686,7 @@ Brought Death into the World, and all our woe,''',
 
         x = parseSOAPRPC(xml)
 
-        self.assertEquals( x ,  [None, None, 'The third element', 'The fourth element', None])
+        self.assertEqual( x ,  [None, None, 'The third element', 'The fourth element', None])
 
         xml = env % '''<SOAP-ENV:Body>
 <SOAP-ENC:Array SOAP-ENC:arrayType="xsd:string[,][4]">
@@ -3789,12 +3741,12 @@ epnedUwrkPzedWU9AL7c/oN7rk65UuPWf7V8c/4E9bc=</dsig:Modulus>
         """
         empty_int = typedArrayType(typed="int")
         empty_int_message = buildSOAP( empty_int )
-        self.assertNotEquals( re.search("xsd:int\[0\]", empty_int_message),
+        self.assertNotEqual( re.search("xsd:int\[0\]", empty_int_message),
                                None )
 
 if __name__ == '__main__':
 
-    print """
+    print("""
 
     NOTE: The 'testArray' test will fail because 'referenced' elements are
     included in the return object.  This is a known shortcoming of
@@ -3802,6 +3754,6 @@ if __name__ == '__main__':
 
     All other tests should succeed.
 
-    """
+    """)
     
     unittest.main()

@@ -20,24 +20,24 @@ Config.simplify_objects = 0
 
 server = SOAPProxy("http://localhost:9900/")
 
-x = u'uMOO' # Single unicode string
+x = 'uMOO' # Single unicode string
 y = server.echo_simple((x,))
 assert( x==y[0] )
 
-x = [u'uMoo1',u'uMoo2'] # array of unicode strings
+x = ['uMoo1','uMoo2'] # array of unicode strings
 y = server.echo_simple(x)
 assert( x[0] == y[0] )
 assert( x[1] == y[1] )
 
 x = {
-     u'A':1,
-     u'B':u'B',
-     'C':u'C',
+     'A':1,
+     'B':'B',
+     'C':'C',
      'D':'D'
      }
 y = server.echo_simple(x)
 
-for key in x.keys():
+for key in list(x.keys()):
   assert( x[key] == y[0][key] )
 
-print "Success"
+print("Success")

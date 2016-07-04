@@ -71,13 +71,13 @@ def DOMParse(inxml):
 # Wierd but the SAX parser runs really slow the first time.
 # Probably got to load a c module or something
 SAXParse(x)
-print
-print "Simple XML"
-print "SAX Parse, no marshalling   ", SAXParse(x)
-print "SOAP Parse, and marshalling ", SOAPParse(x)
-print "DOM Parse, no marshalling   ", DOMParse(x)
-print
-print "Complex XML (references)"
-print "SAX Parse, no marshalling   ", SAXParse(x2)
-print "SOAP Parse, and marshalling ", SOAPParse(x2)
-print "DOM Parse, no marshalling   ", DOMParse(x2)
+print()
+print("Simple XML")
+print("SAX Parse, no marshalling   ", SAXParse(x))
+print("SOAP Parse, and marshalling ", SOAPParse(x))
+print("DOM Parse, no marshalling   ", DOMParse(x))
+print()
+print("Complex XML (references)")
+print("SAX Parse, no marshalling   ", SAXParse(x2))
+print("SOAP Parse, and marshalling ", SOAPParse(x2))
+print("DOM Parse, no marshalling   ", DOMParse(x2))

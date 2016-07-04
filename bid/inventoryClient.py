@@ -18,9 +18,9 @@ def usage (error = None):
     sys.stdout = sys.stderr
 
     if error != None:
-        print error
+        print(error)
 
-    print """usage: %s [options] [server ...]
+    print("""usage: %s [options] [server ...]
   If a long option shows an argument is mandatory, it's mandatory for the
   equivalent short option also.
 
@@ -38,7 +38,7 @@ def usage (error = None):
   -t, --stacktrace      print a stack trace on each unexpected failure
   -T, --always-stacktrace
                         print a stack trace on any failure
-""" % (sys.argv[0], DEFAULT_SERVERS_FILE),
+""" % (sys.argv[0], DEFAULT_SERVERS_FILE), end=' ')
 
     sys.exit (0)
     
@@ -46,18 +46,18 @@ def usage (error = None):
 def methodUsage ():
     sys.stdout = sys.stderr
 
-    print "Methods are specified by number. Multiple methods can be " \
+    print("Methods are specified by number. Multiple methods can be " \
         "specified using a\ncomma-separated list of numbers or ranges. " \
-        "For example 1,4-6,8 specifies\nmethods 1, 4, 5, 6, and 8.\n"
+        "For example 1,4-6,8 specifies\nmethods 1, 4, 5, 6, and 8.\n")
 
-    print "The available methods are:\n"
+    print("The available methods are:\n")
 
     half = (len (DEFAULT_METHODS) + 1) / 2
     for i in range (half):
-        print "%4d. %-25s" % (i + 1, DEFAULT_METHODS[i]),
+        print("%4d. %-25s" % (i + 1, DEFAULT_METHODS[i]), end=' ')
         if i + half < len (DEFAULT_METHODS):
-            print "%4d. %-25s" % (i + 1 + half, DEFAULT_METHODS[i + half]),
-        print
+            print("%4d. %-25s" % (i + 1 + half, DEFAULT_METHODS[i + half]), end=' ')
+        print()
 
     sys.exit (0)
 
@@ -121,7 +121,7 @@ def str2list (s):
         else:
             l[int (i)] = 1
 
-    l = l.keys ()
+    l = list(l.keys ())
     l.sort ()
 
     return l
@@ -144,7 +144,7 @@ def Buy(serv, sa, epname):
     shipTo_d = {"name":"Buyer One ", "address":"1 1st Street ",
               "city":"New York ", "state":"NY ", "zipCode":"10000 "}
          
-    for k,v in shipTo_d.items():
+    for k,v in list(shipTo_d.items()):
         shipTo_d[k] = v[:-1]
         
     itemd1 = SOAP.structType( {"name":"widg1","quantity":200,"price":SOAP.decimalType(45.99), "_typename":"LineItem"})
@@ -200,8 +200,7 @@ def main():
             elif opt in ('-s', '--servers'):
                 servers = arg
             else:
-                raise AttributeError, \
-                     "Recognized but unimplemented option `%s'" % opt
+                raise AttributeError("Recognized but unimplemented option `%s'" % opt)
     except SystemExit:
         raise
     except:
@@ -213,7 +212,7 @@ def main():
     servers = readServers(servers)
 
     if methodnums == None:
-        methodnums = range (1, len (DEFAULT_METHODS) + 1)
+        methodnums = list(range(1, len (DEFAULT_METHODS) + 1))
       
     limitre = re.compile ('|'.join (args), re.IGNORECASE)
     
@@ -239,48 +238,48 @@ def main():
                 raise
             except:
                 if 'n' in output:
-                    print title, "test not yet implemented"
+                    print(title, "test not yet implemented")
                 notimp += 1
                 continue
 
             try:
                 res = fn (serv, s['soapaction'], s['name'])
-                if s['nonfunctional'].has_key (name):
-                    print title, "succeeded despite marked nonfunctional"
+                if name in s['nonfunctional']:
+                    print(title, "succeeded despite marked nonfunctional")
                 elif 's' in output:
-                    print title, "succeeded "
+                    print(title, "succeeded ")
                 succeed += 1
             except KeyboardInterrupt:
-                print "fail"
+                print("fail")
                 raise
             except:
-                if s['nonfunctional'].has_key (name):
+                if name in s['nonfunctional']:
                     if 'F' in output:
                         t = 'as expected'
                         if s['nonfunctional'][name] != '':
                             t += ', ' + s['nonfunctional'][name]
-                        print title, "failed (%s) -" %t, sys.exc_info()[1]
+                        print(title, "failed (%s) -" %t, sys.exc_info()[1])
                     failok += 1
                 else:
                     if 'f' in output:
-                        print title, "failed -", str (sys.exc_info()[1])
+                        print(title, "failed -", str (sys.exc_info()[1]))
                     fail += 1
 
     if stats:
-        print "   Tests ended at:", time.ctime (time.time())
+        print("   Tests ended at:", time.ctime (time.time()))
         if stats > 0:
-            print "        Total tests: %d" % total
-            print "          Successes: %d (%3.2f%%)" % \
-                (succeed, 100.0 * succeed / total)
+            print("        Total tests: %d" % total)
+            print("          Successes: %d (%3.2f%%)" % \
+                (succeed, 100.0 * succeed / total))
         if stats > 0 or fail > 0:
-            print "Failed unexpectedly: %d (%3.2f%%)" % \
-                (fail, 100.0 * fail / total)
+            print("Failed unexpectedly: %d (%3.2f%%)" % \
+                (fail, 100.0 * fail / total))
         if stats > 0:
-            print " Failed as expected: %d (%3.2f%%)" % \
-                (failok, 100.0 * failok / total)
+            print(" Failed as expected: %d (%3.2f%%)" % \
+                (failok, 100.0 * failok / total))
         if stats > 0 or notimp > 0:
-            print "    Not implemented: %d (%3.2f%%)" % \
-                (notimp, 100.0 * notimp / total)
+            print("    Not implemented: %d (%3.2f%%)" % \
+                (notimp, 100.0 * notimp / total))
 
     return fail + notimp
     

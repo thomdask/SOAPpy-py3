@@ -15,4 +15,4 @@ else:
     server = SOAP.SOAPProxy("http://admin:pw3340@localhost:8080/",encoding=None)
 
 x = server.sopa()
-print x
+print(x)

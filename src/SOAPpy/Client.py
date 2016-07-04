@@ -52,7 +52,7 @@ from .types import *
 import re
 import base64
 import socket, http.client
-from http.client import HTTPConnection, HTTP
+from http.client import HTTPConnection
 import http.cookies
 
 # SOAPpy modules
@@ -61,7 +61,8 @@ from .Config      import Config
 from .Parser      import parseSOAPRPC
 from .SOAPBuilder import buildSOAP
 from .Utilities   import *
-from .Types       import faultType, simplify
+from .types       import faultType, simplify
+
 import collections
 
 ################################################################################
@@ -71,6 +72,98 @@ import collections
 
 def SOAPUserAgent():
     return "SOAPpy " + __version__ + " (pywebsvcs.sf.net)"
+
+
+class HTTP:
+    "Compatibility class with httplib.py from 1.5."
+
+    _http_vsn = 10
+    _http_vsn_str = 'HTTP/1.0'
+
+    debuglevel = 0
+
+    _connection_class = HTTPConnection
+
+    def __init__(self, host='', port=None, strict=None):
+        "Provide a default host, since the superclass requires one."
+
+        # some joker passed 0 explicitly, meaning default port
+        if port == 0:
+            port = None
+
+        # Note that we may pass an empty string as the host; this will raise
+        # an error when we attempt to connect. Presumably, the client code
+        # will call connect before then, with a proper host.
+        self._setup(self._connection_class(host, port, strict))
+
+    def _setup(self, conn):
+        self._conn = conn
+
+        # set up delegation to flesh out interface
+        self.send = conn.send
+        self.putrequest = conn.putrequest
+        self.putheader = conn.putheader
+        self.endheaders = conn.endheaders
+        self.set_debuglevel = conn.set_debuglevel
+
+        conn._http_vsn = self._http_vsn
+        conn._http_vsn_str = self._http_vsn_str
+
+        self.file = None
+
+    def connect(self, host=None, port=None):
+        "Accept arguments to set the host/port, since the superclass doesn't."
+
+        if host is not None:
+            (self._conn.host, self._conn.port) = self._conn._get_hostport(host, port)
+        self._conn.connect()
+
+    def getfile(self):
+        "Provide a getfile, since the superclass' does not use this concept."
+        return self.file
+
+    def getreply(self, buffering=False):
+        """Compat definition since superclass does not define it.
+
+        Returns a tuple consisting of:
+        - server status code (e.g. '200' if all goes well)
+        - server "reason" corresponding to status code
+        - any RFC822 headers in the response from the server
+        """
+        try:
+            if not buffering:
+                response = self._conn.getresponse()
+            else:
+                #only add this keyword if non-default for compatibility
+                #with other connection classes
+                response = self._conn.getresponse(buffering)
+        except BadStatusLine as e:
+            ### hmm. if getresponse() ever closes the socket on a bad request,
+            ### then we are going to have problems with self.sock
+
+            ### should we keep this behavior? do people use it?
+            # keep the socket open (as a file), and return it
+            self.file = self._conn.sock.makefile('rb', 0)
+
+            # close our socket -- we want to restart after any protocol error
+            self.close()
+
+            self.headers = None
+            return -1, e.line, None
+
+        self.headers = response.msg
+        self.file = response.fp
+        return response.status, response.reason, response.msg
+
+    def close(self):
+        self._conn.close()
+
+        # note that self.file == response.fp, which gets closed by the
+        # superclass. just clear the object ref here.
+        ### hmm. messy. if status==-1, then self.file is owned by us.
+        ### well... we aren't explicitly closing, but losing this ref will
+        ### do it
+        self.file = None
 
 
 class SOAPAddress:

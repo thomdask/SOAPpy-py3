@@ -42,8 +42,10 @@
 
 ident = '$Id: Errors.py 921 2005-02-15 16:32:23Z warnes $'
 from .version import __version__
-
-import exceptions
+try:
+   import exceptions
+except ImportError:
+   import builtins as exceptions
 
 ################################################################################
 # Exceptions

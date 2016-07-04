@@ -1,7 +1,7 @@
 # SOAPpy modules
 import traceback
 from .Config    import Config
-from .Types     import *
+from .types     import *
 from .NS        import NS
 from .Utilities import *
 

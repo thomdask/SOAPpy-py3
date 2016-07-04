@@ -56,7 +56,7 @@ import _thread
 # SOAPpy modules
 from .Parser      import parseSOAPRPC
 from .Config      import Config
-from .Types       import faultType, voidType, simplify
+from .types       import faultType, voidType, simplify
 from .NS          import NS
 from .SOAPBuilder import buildSOAP
 from .Utilities   import debugHeader, debugFooter

@@ -48,7 +48,7 @@ from .version import __version__
 
 #import xml.sax
 import urllib.request, urllib.parse, urllib.error
-from .types import *
+from SOAPpy.Types import *
 import re
 import base64
 import socket, http.client
@@ -61,7 +61,7 @@ from .Config      import Config
 from .Parser      import parseSOAPRPC
 from .SOAPBuilder import buildSOAP
 from .Utilities   import *
-from .types       import faultType, simplify
+from SOAPpy.Types       import faultType, simplify
 
 import collections
 

@@ -1,7 +1,7 @@
 # SOAPpy modules
 import traceback
 from .Config    import Config
-from .types     import *
+from SOAPpy.Types     import *
 from .NS        import NS
 from .Utilities import *
 
@@ -151,7 +151,7 @@ class SOAPParser(xml.sax.handler.ContentHandler):
             except:
                 rules = None
 
-        if type(rules) not in (NoneType, DictType):
+        if type(rules) not in (type(None), dict):
             kind = rules
         else:
             kind = attrs.get((NS.ENC, 'arrayType'))
@@ -376,8 +376,8 @@ class SOAPParser(xml.sax.handler.ContentHandler):
 
             if len(self._stack) == 3 and kind == None and \
                 len(cur) == 0 and \
-                (self._data == None or string.join(self._data, "").strip() == ''):
-                data = structType(name = (ns, name), attrs = attrs)
+                (self._data is None or "".join(self._data).strip() == ''):
+                data = structType(name=(ns, name), attrs=attrs)
                 break
 
             if len(cur) == 0 and ns != NS.URN:
@@ -389,8 +389,7 @@ class SOAPParser(xml.sax.handler.ContentHandler):
 #                 print "attrs:", attrs
 #                 print "kind:", kind
 
-
-                if kind == None:
+                if kind is None:
                     # If the current item's container is an array, it will
                     # have a kind. If so, get the bit before the first [,
                     # which is the type of the array, therefore the type of
@@ -398,35 +397,37 @@ class SOAPParser(xml.sax.handler.ContentHandler):
 
                     kind = self._stack[-1].kind
 
-                    if kind != None:
+                    if kind is not None:
                         i = kind[1].find('[')
                         if i >= 0:
                             kind = (kind[0], kind[1][:i])
-                    elif ns != None:
+                    elif ns is not None:
                         kind = (ns, name)
 
-                if kind != None:
+                if kind is not None:
                     try:
-                        data = self.convertType(string.join(self._data, ""),
+                        data = self.convertType("".join(self._data),
                                                 kind, attrs)
                     except UnknownTypeError:
                         data = None
                 else:
                     data = None
 
-                if data == None:
-                    if self._data == None:
+                if data is None:
+                    if self._data is None:
                         data = ''
                     else:
-                        data = string.join(self._data, "")
+                        data = "".join(self._data)
 
                     if len(attrs) == 0:
-                        try: data = str(data)
-                        except: pass
+                        try:
+                            data = str(data)
+                        except:
+                            pass
 
                 break
 
-            data = structType(name = (ns, name), attrs = attrs)
+            data = structType(name=(ns, name), attrs=attrs)
 
             break
 
@@ -441,7 +442,7 @@ class SOAPParser(xml.sax.handler.ContentHandler):
         if root:
             self._stack[-1].append(name, data, attrs)
 
-        if idval != None:
+        if idval is not None:
             self._ids[idval] = data
 
             if idval in self._refs:
@@ -475,7 +476,7 @@ class SOAPParser(xml.sax.handler.ContentHandler):
             pass
 
     def characters(self, c):
-        if self._data != None:
+        if self._data is not None:
             self._data.append(c)
 
     arrayre = '^(?:(?P<ns>[^:]*):)?' \
@@ -484,12 +485,12 @@ class SOAPParser(xml.sax.handler.ContentHandler):
         '(?:\[(?P<asize>\d+(?:,\d+)*)?\])$'
 
     def startArray(self, name, kind, attrs, elemsname):
-        if type(self.arrayre) == StringType:
-            self.arrayre = re.compile (self.arrayre)
+        if isinstance(self.arrayre, str):
+            self.arrayre = re.compile(self.arrayre)
 
         offset = attrs.get((NS.ENC, "offset"))
 
-        if offset != None:
+        if offset is not None:
             del attrs[(NS.ENC, "offset")]
 
             try:

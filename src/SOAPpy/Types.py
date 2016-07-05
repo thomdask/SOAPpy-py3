@@ -45,7 +45,7 @@ import urllib.request, urllib.parse, urllib.error
 import copy
 import re
 import time
-from .types import *
+from SOAPpy.Types import *
 
 # SOAPpy modules
 from .Errors    import *
@@ -75,7 +75,7 @@ class anyType:
         if self.__class__ == anyType:
             raise Error("anyType can't be instantiated directly")
 
-        if type(name) in (ListType, TupleType):
+        if type(name) in (list, tuple):
             self._ns, self._name = name
         else:
             self._ns = self._validURIs[0]
@@ -118,15 +118,15 @@ class anyType:
     def _fixAttr(self, attr):
         if type(attr) in (StringType, UnicodeType):
             attr = (None, attr)
-        elif type(attr) == ListType:
+        elif type(attr) == list:
             attr = tuple(attr)
-        elif type(attr) != TupleType:
+        elif type(attr) != tuple:
             raise AttributeError("invalid attribute type")
 
         if len(attr) != 2:
             raise AttributeError("invalid attribute length")
 
-        if type(attr[0]) not in (NoneType, StringType, UnicodeType):
+        if type(attr[0]) not in (type(None), str):
             raise AttributeError("invalid attribute namespace URI type")
 
         return attr
@@ -149,13 +149,13 @@ class anyType:
             
 
     def _setAttrs(self, attrs):
-        if type(attrs) in (ListType, TupleType):
+        if type(attrs) in (list, tuple):
             for i in range(0, len(attrs), 2):
                 self._setAttr(attrs[i], attrs[i + 1])
 
             return
 
-        if type(attrs) == DictType:
+        if type(attrs) == dict:
             d = attrs
         elif isinstance(attrs, anyType):
             d = attrs._attrs
@@ -284,7 +284,7 @@ class decimalType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType, FloatType):
+        if type(data) not in (int, LongType, FloatType):
             raise Error("invalid %s value" % self._type)
 
         return data
@@ -294,7 +294,7 @@ class floatType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType, FloatType) or \
+        if type(data) not in (int, LongType, FloatType) or \
             data < -3.4028234663852886E+38 or \
             data >  3.4028234663852886E+38:
             raise ValueError("invalid %s value: %s" % (self._type, repr(data)))
@@ -309,7 +309,7 @@ class doubleType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType, FloatType) or \
+        if type(data) not in (int, LongType, FloatType) or \
             data < -1.7976931348623158E+308 or \
             data  > 1.7976931348623157E+308:
             raise ValueError("invalid %s value: %s" % (self._type, repr(data)))
@@ -329,9 +329,9 @@ class durationType(anyType):
         try:
             # A tuple or a scalar is OK, but make them into a list
 
-            if type(data) == TupleType:
+            if type(data) == tuple:
                 data = list(data)
-            elif type(data) != ListType:
+            elif type(data) != list:
                 data = [data]
 
             if len(data) > 6:
@@ -348,7 +348,7 @@ class durationType(anyType):
                     continue
 
                 if type(data[i]) not in \
-                    (IntType, LongType, FloatType):
+                    (int, LongType, FloatType):
                     raise Exception("element %d a bad type" % i)
 
                 if data[i] and f == -1:
@@ -433,13 +433,13 @@ class dateTimeType(anyType):
             if data == None:
                 data = time.time()
 
-            if (type(data) in (IntType, LongType)):
+            if (type(data) in (int, LongType)):
                 data = list(time.gmtime(data)[:6])
             elif (type(data) == FloatType):
                 f = data - int(data)
                 data = list(time.gmtime(int(data))[:6])
                 data[5] += f
-            elif type(data) in (ListType, TupleType):
+            elif type(data) in (list, tuple):
                 if len(data) < 6:
                     raise Exception("not enough values")
                 if len(data) > 9:
@@ -477,13 +477,13 @@ class recurringInstantType(anyType):
         try:
             if data == None:
                 data = list(time.gmtime(time.time())[:6])
-            if (type(data) in (IntType, LongType)):
+            if (type(data) in (int, LongType)):
                 data = list(time.gmtime(data)[:6])
             elif (type(data) == FloatType):
                 f = data - int(data)
                 data = list(time.gmtime(int(data))[:6])
                 data[5] += f
-            elif type(data) in (ListType, TupleType):
+            elif type(data) in (list, tuple):
                 if len(data) < 1:
                     raise Exception("not enough values")
                 if len(data) > 9:
@@ -566,9 +566,9 @@ class timeType(anyType):
                 f = data - int(data)
                 data = list(time.gmtime(int(data))[3:6])
                 data[2] += f
-            elif type(data) in (IntType, LongType):
+            elif type(data) in (int, LongType):
                 data = time.gmtime(data)[3:6]
-            elif type(data) in (ListType, TupleType):
+            elif type(data) in (list, tuple):
                 if len(data) == 9:
                     data = data[3:6]
                 elif len(data) > 3:
@@ -610,9 +610,9 @@ class dateType(anyType):
         try:
             if data == None:
                 data = time.gmtime(time.time())[0:3]
-            elif type(data) in (IntType, LongType, FloatType):
+            elif type(data) in (int, LongType, FloatType):
                 data = time.gmtime(data)[0:3]
-            elif type(data) in (ListType, TupleType):
+            elif type(data) in (list, tuple):
                 if len(data) == 9:
                     data = data[0:3]
                 elif len(data) > 3:
@@ -653,9 +653,9 @@ class gYearMonthType(anyType):
         try:
             if data == None:
                 data = time.gmtime(time.time())[0:2]
-            elif type(data) in (IntType, LongType, FloatType):
+            elif type(data) in (int, LongType, FloatType):
                 data = time.gmtime(data)[0:2]
-            elif type(data) in (ListType, TupleType):
+            elif type(data) in (list, tuple):
                 if len(data) == 9:
                     data = data[0:2]
                 elif len(data) > 2:
@@ -696,10 +696,10 @@ class gYearType(anyType):
         try:
             if data == None:
                 data = time.gmtime(time.time())[0:1]
-            elif type(data) in (IntType, LongType, FloatType):
+            elif type(data) in (int, LongType, FloatType):
                 data = [data]
 
-            if type(data) in (ListType, TupleType):
+            if type(data) in (list, tuple):
                 if len(data) == 9:
                     data = data[0:1]
                 elif len(data) < 1:
@@ -715,7 +715,7 @@ class gYearType(anyType):
                         raise Exception("not integral")
 
                     data = [s]
-                elif type(data[0]) not in (IntType, LongType):
+                elif type(data[0]) not in (int, LongType):
                     raise Exception("bad type")
             else:
                 raise Exception("invalid type")
@@ -742,10 +742,10 @@ class centuryType(anyType):
         try:
             if data == None:
                 data = time.gmtime(time.time())[0:1] / 100
-            elif type(data) in (IntType, LongType, FloatType):
+            elif type(data) in (int, LongType, FloatType):
                 data = [data]
 
-            if type(data) in (ListType, TupleType):
+            if type(data) in (list, tuple):
                 if len(data) == 9:
                     data = data[0:1] / 100
                 elif len(data) < 1:
@@ -761,7 +761,7 @@ class centuryType(anyType):
                         raise Exception("not integral")
 
                     data = [s]
-                elif type(data[0]) not in (IntType, LongType):
+                elif type(data[0]) not in (int, LongType):
                     raise Exception("bad type")
             else:
                 raise Exception("invalid type")
@@ -791,9 +791,9 @@ class gMonthDayType(anyType):
         try:
             if data == None:
                 data = time.gmtime(time.time())[1:3]
-            elif type(data) in (IntType, LongType, FloatType):
+            elif type(data) in (int, LongType, FloatType):
                 data = time.gmtime(data)[1:3]
-            elif type(data) in (ListType, TupleType):
+            elif type(data) in (list, tuple):
                 if len(data) == 9:
                     data = data[0:2]
                 elif len(data) > 2:
@@ -832,10 +832,10 @@ class gMonthType(anyType):
         try:
             if data == None:
                 data = time.gmtime(time.time())[1:2]
-            elif type(data) in (IntType, LongType, FloatType):
+            elif type(data) in (int, LongType, FloatType):
                 data = [data]
 
-            if type(data) in (ListType, TupleType):
+            if type(data) in (list, tuple):
                 if len(data) == 9:
                     data = data[1:2]
                 elif len(data) < 1:
@@ -851,7 +851,7 @@ class gMonthType(anyType):
                         raise Exception("not integral")
 
                     data = [s]
-                elif type(data[0]) not in (IntType, LongType):
+                elif type(data[0]) not in (int, LongType):
                     raise Exception("bad type")
 
                 if data[0] < 1 or data[0] > 12:
@@ -879,10 +879,10 @@ class gDayType(anyType):
         try:
             if data == None:
                 data = time.gmtime(time.time())[2:3]
-            elif type(data) in (IntType, LongType, FloatType):
+            elif type(data) in (int, LongType, FloatType):
                 data = [data]
 
-            if type(data) in (ListType, TupleType):
+            if type(data) in (list, tuple):
                 if len(data) == 9:
                     data = data[2:3]
                 elif len(data) < 1:
@@ -898,7 +898,7 @@ class gDayType(anyType):
                         raise Exception("not integral")
 
                     data = [s]
-                elif type(data[0]) not in (IntType, LongType):
+                elif type(data[0]) not in (int, LongType):
                     raise Exception("bad type")
 
                 if data[0] < 1 or data[0] > 31:
@@ -1038,7 +1038,7 @@ class ENTITIESType(anyType):
         if type(data) in (StringType, UnicodeType):
             return (data,)
 
-        if type(data) not in (ListType, TupleType) or \
+        if type(data) not in (list, tuple) or \
             [x for x in data if type(x) not in (StringType, UnicodeType)]:
             raise AttributeError("invalid %s type" % self._type)
 
@@ -1055,7 +1055,7 @@ class integerType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType):
+        if type(data) not in (int, LongType):
             raise ValueError("invalid %s value" % self._type)
 
         return data
@@ -1067,7 +1067,7 @@ class nonPositiveIntegerType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or data > 0:
+        if type(data) not in (int, LongType) or data > 0:
             raise ValueError("invalid %s value" % self._type)
 
         return data
@@ -1085,7 +1085,7 @@ class negativeIntegerType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or data >= 0:
+        if type(data) not in (int, LongType) or data >= 0:
             raise ValueError("invalid %s value" % self._type)
 
         return data
@@ -1103,21 +1103,21 @@ class longType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or \
+        if type(data) not in (int, LongType) or \
             data < -9223372036854775808 or \
             data >  9223372036854775807:
             raise ValueError("invalid %s value" % self._type)
 
         return data
 
-class intType(anyType):
+class int(anyType):
     _validURIs = (NS.XSD2, NS.XSD3, NS.ENC)
 
     def _checkValueSpace(self, data):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or \
+        if type(data) not in (int, LongType) or \
             data < -2147483648 or \
             data >  2147483647:
             raise ValueError("invalid %s value" % self._type)
@@ -1131,7 +1131,7 @@ class shortType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or \
+        if type(data) not in (int, LongType) or \
             data < -32768 or \
             data >  32767:
             raise ValueError("invalid %s value" % self._type)
@@ -1145,7 +1145,7 @@ class byteType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or \
+        if type(data) not in (int, LongType) or \
             data < -128 or \
             data >  127:
             raise ValueError("invalid %s value" % self._type)
@@ -1159,7 +1159,7 @@ class nonNegativeIntegerType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or data < 0:
+        if type(data) not in (int, LongType) or data < 0:
             raise ValueError("invalid %s value" % self._type)
 
         return data
@@ -1177,21 +1177,21 @@ class unsignedLongType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or \
+        if type(data) not in (int, LongType) or \
             data < 0 or \
             data > 18446744073709551615:
             raise ValueError("invalid %s value" % self._type)
 
         return data
 
-class unsignedIntType(anyType):
+class unsignedint(anyType):
     _validURIs = (NS.XSD2, NS.XSD3, NS.ENC)
 
     def _checkValueSpace(self, data):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or \
+        if type(data) not in (int, LongType) or \
             data < 0 or \
             data > 4294967295:
             raise ValueError("invalid %s value" % self._type)
@@ -1205,7 +1205,7 @@ class unsignedShortType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or \
+        if type(data) not in (int, LongType) or \
             data < 0 or \
             data > 65535:
             raise ValueError("invalid %s value" % self._type)
@@ -1219,7 +1219,7 @@ class unsignedByteType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or \
+        if type(data) not in (int, LongType) or \
             data < 0 or \
             data > 255:
             raise ValueError("invalid %s value" % self._type)
@@ -1233,7 +1233,7 @@ class positiveIntegerType(anyType):
         if data == None:
             raise ValueError("must supply initial %s value" % self._type)
 
-        if type(data) not in (IntType, LongType) or data <= 0:
+        if type(data) not in (int, LongType) or data <= 0:
             raise ValueError("invalid %s value" % self._type)
 
         return data
@@ -1254,7 +1254,7 @@ class compoundType(anyType):
         anyType.__init__(self, data, name, typed, attrs)
         self._keyord    = []
 
-        if type(data) == DictType:
+        if type(data) == dict:
             self.__dict__.update(data)
 
     def _aslist(self, item=None):
@@ -1282,7 +1282,7 @@ class compoundType(anyType):
 
  
     def __getitem__(self, item):
-        if type(item) == IntType:
+        if not isinstance(item, str):
             return self.__dict__[self._keyord[item]]
         else:
             return getattr(self, item)
@@ -1299,7 +1299,7 @@ class compoundType(anyType):
     def _addItem(self, name, value, attrs = None):
 
         if name in self._keyord:
-            if type(self.__dict__[name]) != ListType:
+            if type(self.__dict__[name]) != list:
                 self.__dict__[name] = [self.__dict__[name]]
             self.__dict__[name].append(value)
         else:
@@ -1308,7 +1308,7 @@ class compoundType(anyType):
             
     def _placeItem(self, name, value, pos, subpos = 0, attrs = None):
 
-        if subpos == 0 and type(self.__dict__[name]) != ListType:
+        if subpos == 0 and type(self.__dict__[name]) != list:
             self.__dict__[name] = value
         else:
             self.__dict__[name][subpos] = value
@@ -1328,7 +1328,7 @@ class compoundType(anyType):
         except:
             return default
 
-        if type(d) == ListType:
+        if type(d) == list:
             return d
         return [d]
 
@@ -1358,7 +1358,7 @@ class arrayType(collections.UserList, compoundType):
         offset = 0, rank = None, asize = 0, elemsname = None):
 
         if data:
-            if type(data) not in (ListType, TupleType):
+            if type(data) not in (list, tuple):
                 raise Error("Data must be a sequence")
 
         collections.UserList.__init__(self, data)
@@ -1694,7 +1694,7 @@ def simplify(object, level=0):
             if isPublic(k):
                 data[k] = simplify(data[k], level=level+1)
         return data
-    elif type(object)==DictType:
+    elif type(object)==dict:
         for k in list(object.keys()):
             if isPublic(k):
                 object[k] = simplify(object[k])
@@ -1741,7 +1741,7 @@ def simplify_contents(object, level=0):
         for k in list(data.keys()):
             if isPublic(k):
                 object[k] = simplify(data[k], level=level+1)
-    elif type(object)==DictType:
+    elif type(object)==dict:
         for k in list(object.keys()):
             if isPublic(k):
                 object[k] = simplify(object[k])

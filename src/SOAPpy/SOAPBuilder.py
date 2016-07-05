@@ -42,7 +42,7 @@ from wstools.XMLname import toXMLname, fromXMLname
 # SOAPpy modules
 from .Config import Config
 from .NS     import NS
-from .types  import *
+from SOAPpy.Types  import *
 
 # Test whether this Python version has Types.BooleanType
 # If it doesn't have it, then False and True are serialized as integers
@@ -282,7 +282,7 @@ class SOAPBuilder:
         ns_map = ns_map.copy()
         self.depth += 1
 
-        if type(tag) not in (NoneType, StringType, UnicodeType):
+        if type(tag) not in (type(None), str):
             raise KeyError("tag must be a string or None")
 
         self.dump_dispatch(obj, tag, typed, ns_map)
@@ -607,7 +607,7 @@ class SOAPBuilder:
             (mapType, self.dump_map),
             (arrayType, self.dump_list),
             (str, self.dump_string),
-            (NoneType, self.dump_None),
+            (type(None), self.dump_None),
             (bool, self.dump_bool),
             (int, self.dump_int),
             (int, self.dump_int),

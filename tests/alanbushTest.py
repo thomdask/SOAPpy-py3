@@ -31,4 +31,4 @@ server = SOAPProxy(SoapEndpointURL,
                         )
 
 for category in server.GetCategories():
-   print category
+   print(category)

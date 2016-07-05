@@ -18,9 +18,9 @@ except:
    proxy = None
 
  
-print "##########################################"
-print " SOAP services registered at xmethods.net"
-print "##########################################"
+print("##########################################")
+print(" SOAP services registered at xmethods.net")
+print("##########################################")
 
 server = SOAPProxy("http://www.xmethods.net/interfaces/query",
                         namespace = 'urn:xmethods-delayed-quotes',
@@ -29,6 +29,6 @@ server = SOAPProxy("http://www.xmethods.net/interfaces/query",
 names = server.getAllServiceNames()
 
 for item in names:
-    print 'name:',  item['name']
-    print 'id  :',  item['id']
-    print 
+    print('name:',  item['name'])
+    print('id  :',  item['id'])
+    print() 

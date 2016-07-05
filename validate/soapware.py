@@ -62,16 +62,16 @@ def usage (error = None):
     sys.stdout = sys.stderr
 
     if error != None:
-        print error
+        print(error)
 
-    print """usage: %s [options]
+    print("""usage: %s [options]
   If a long option shows an argument is mandatory, it's mandatory for the
   equivalent short option also. The default (if any) is shown in brackets.
 
   -?, --help            display this usage
   -h, --host=HOST       use HOST in the address to listen on [%s]
   -p, --port=PORT       listen on PORT [%d]
-""" % (sys.argv[0], DEFAULT_HOST, DEFAULT_PORT),
+""" % (sys.argv[0], DEFAULT_HOST, DEFAULT_PORT), end=' ')
 
     sys.exit (0)
 
@@ -91,8 +91,7 @@ def main ():
             elif opt in ('-p', '--port'):
                 port = int (arg)
             else:
-                raise AttributeError, \
-                     "Recognized but unimplemented option `%s'" % opt
+                raise AttributeError("Recognized but unimplemented option `%s'" % opt)
     except SystemExit:
         raise
     except:

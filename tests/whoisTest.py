@@ -19,7 +19,7 @@ except:
 server = SOAPProxy("http://www.SoapClient.com/xml/SQLDataSoap.WSDL",
                    http_proxy=proxy)
 
-print "whois>>", server.ProcessSRL(SRLFile="WHOIS.SRI",
+print("whois>>", server.ProcessSRL(SRLFile="WHOIS.SRI",
                                    RequestName="whois",
-                                   key = "microsoft.com")
+                                   key = "microsoft.com"))
 

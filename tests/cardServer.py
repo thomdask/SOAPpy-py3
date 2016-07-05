@@ -26,7 +26,7 @@ for suit in [__cs, __ds, __hs, __ss]:
 
 
 def deal(num):
-    if num not in range(1,53):
+    if num not in list(range(1,53)):
         return -1
     else:
         alreadydealt = []
@@ -82,7 +82,7 @@ def dealHand (NumberOfCards, StringSeparator):
 
 def dealArrangedHand (NumberOfCards, StringSeparator):
     if NumberOfCards < 1 or NumberOfCards > 52:
-        raise ValueError, "NumberOfCards must be between 1 and 52"
+        raise ValueError("NumberOfCards must be between 1 and 52")
     unarranged = deal(NumberOfCards)
     hand = arrangeHand(unarranged)
     return string.join(hand, StringSeparator)

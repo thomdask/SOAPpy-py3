@@ -4,15 +4,15 @@ import getopt
 
 
 def usage():
-    print """usage: %s [options]
+    print("""usage: %s [options]
     -m, --method=METHOD#[,METHOD#...] specify METHOD# of ? for the list
     -p, --port=PORT#  allows to specify PORT# of server
-    """
+    """)
     sys.exit(1)
 
 def methodUsage():
-    print "The available methods are:"
-    print "1. Monitor \t\t2. Clear"
+    print("The available methods are:")
+    print("1. Monitor \t\t2. Clear")
     sys.exit(0)
 
 
@@ -29,7 +29,7 @@ try:
         elif opt in ('-p', '--port'):
             port = int(arg)
         else:
-            raise AttributeError, "Recognized but unimpl option '%s'" % opt
+            raise AttributeError("Recognized but unimpl option '%s'" % opt)
 except SystemExit:
     raise
 except:
@@ -41,10 +41,10 @@ ns = "http://www.soapinterop.org/Bid"
 
 serv = SOAP.SOAPProxy(ep, namespace =ns, soapaction = sa)
 if methodnum == 1:
-    print serv.Monitor(str="actzero")
+    print(serv.Monitor(str="actzero"))
 elif methodnum == 2:
-    print serv.Clear(str="actzero")
+    print(serv.Clear(str="actzero"))
 else:
-    print "invalid methodnum"
+    print("invalid methodnum")
     methodUsage()
 

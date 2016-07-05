@@ -8,4 +8,4 @@ results = server.doGoogleSearch(key, 'warnes', 0, 10, False, "",
 
 for i in range(len(results.resultElements)):
   res = results.resultElements[i]
-  print '%d: %s --> %s' % ( i, res.title, res.URL )
+  print('%d: %s --> %s' % ( i, res.title, res.URL ))

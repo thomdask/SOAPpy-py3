@@ -36,8 +36,8 @@ def _authorize(*args, **kw):
     global allowAll, Config
 
     if Config.debug:
-        print "Authorize (function) called! (result = %d)" % allowAll
-        print "Arguments: %s" % kw
+        print("Authorize (function) called! (result = %d)" % allowAll)
+        print("Arguments: %s" % kw)
     
     if allowAll:
         return 1
@@ -51,7 +51,7 @@ def echo(s):
     # Test of context retrieval
     ctx = Server.GetSOAPContext()
     if Config.debug:
-        print "SOAP Context: ", ctx
+        print("SOAP Context: ", ctx)
         
     return s + s
 
@@ -71,10 +71,10 @@ class echoBuilder:
         global allowAll, Config
 
         if Config.debug:
-            print "Authorize (method) called with arguments:"
-            print "*args=%s" % str(args)
-            print "**kw =%s" % str(kw)
-            print "Approved -> %d" % allowAll
+            print("Authorize (method) called with arguments:")
+            print("*args=%s" % str(args))
+            print("**kw =%s" % str(kw))
+            print("Approved -> %d" % allowAll)
         
         if allowAll:
             return 1
@@ -91,40 +91,40 @@ def echo_wc(s, _SOAPContext):
 
     # The Context object has extra info about the call
     if Config.debug:
-        print "-- XML", sep[7:]
+        print("-- XML", sep[7:])
         # The original XML request
-        print c.xmldata     
+        print(c.xmldata)     
 
-        print "-- Header", sep[10:]
+        print("-- Header", sep[10:])
         # The SOAP Header or None if not present
-        print c.header      
+        print(c.header)      
 
         if c.header:
-            print "-- Header.mystring", sep[19:]
+            print("-- Header.mystring", sep[19:])
             # An element of the SOAP Header
-            print c.header.mystring         
+            print(c.header.mystring)         
 
-        print "-- Body", sep[8:]
+        print("-- Body", sep[8:])
         # The whole Body object
-        print c.body        
+        print(c.body)        
 
-        print "-- Peer", sep[8:]
+        print("-- Peer", sep[8:])
         if not GSI:
             # The socket object, useful for
-            print c.connection.getpeername()    
+            print(c.connection.getpeername())    
         else:
             # The socket object, useful for
-            print c.connection.get_remote_address() 
+            print(c.connection.get_remote_address()) 
             ctx = c.connection.get_security_context()
-            print ctx.inquire()[0].display()
+            print(ctx.inquire()[0].display())
 
-        print "-- SOAPAction", sep[14:]
+        print("-- SOAPAction", sep[14:])
         # The SOAPaction HTTP header
-        print c.soapaction                  
+        print(c.soapaction)                  
 
-        print "-- HTTP headers", sep[16:]
+        print("-- HTTP headers", sep[16:])
         # All the HTTP headers
-        print c.httpheaders                 
+        print(c.httpheaders)                 
 
     return s + s
 
@@ -149,8 +149,7 @@ SSL = 0
 if len(sys.argv) > 1 and sys.argv[1] == '-s':
     SSL = 1
     if not Config.SSLserver:
-        raise RuntimeError, \
-            "this Python installation doesn't have OpenSSL and M2Crypto"
+        raise RuntimeError("this Python installation doesn't have OpenSSL and M2Crypto")
     ssl_context = SSL.Context()
     ssl_context.load_cert('validate/server.pem')
     server = SOAPServer(addr, ssl_context = ssl_context)
@@ -164,7 +163,7 @@ else:
     server = SOAPServer(addr)
     prefix = 'http'
 
-print "Server listening at: %s://%s:%d/" % (prefix, addr[0], addr[1])
+print("Server listening at: %s://%s:%d/" % (prefix, addr[0], addr[1]))
 
 # register the method
 server.registerFunction(echo)

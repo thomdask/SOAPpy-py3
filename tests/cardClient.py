@@ -16,15 +16,15 @@ ns = "http://soapinterop.org/"
 
 serv = SOAPProxy(endpoint, namespace=ns, soapaction=sa)
 try: hand =  serv.dealHand(NumberOfCards = 13, StringSeparator = '\n')
-except: print "no dealHand"; hand = 0
+except: print("no dealHand"); hand = 0
 try: sortedhand = serv.dealArrangedHand(NumberOfCards=13,StringSeparator='\n')
-except: print "no sorted"; sortedhand = 0
+except: print("no sorted"); sortedhand = 0
 try: card = serv.dealCard()
-except: print "no card"; card = 0
+except: print("no card"); card = 0
 
-print "*****hand****\n",hand,"\n*********"
-print "******sortedhand*****\n",sortedhand,"\n*********"
-print "card:",card
+print("*****hand****\n",hand,"\n*********")
+print("******sortedhand*****\n",sortedhand,"\n*********")
+print("card:",card)
 
 serv.quit()
 

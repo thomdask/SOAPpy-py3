@@ -16,6 +16,6 @@ for i in range(400):
 
 gc.collect()
 if len(gc.garbage):
-    print 'still leaking'
+    print('still leaking')
 else:
-    print 'no leak'
+    print('no leak')

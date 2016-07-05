@@ -43,33 +43,33 @@ GSIServer - Contributed by Ivan R. Judson <judson@mcs.anl.gov>
 ################################################################################
 
 """
-from __future__ import nested_scopes
+
 
 ident = '$Id: GSIServer.py 1468 2008-05-24 01:55:33Z warnes $'
-from version import __version__
+from .version import __version__
 
 #import xml.sax
 import re
 import socket
 import sys
-import SocketServer
-from types import *
-import BaseHTTPServer
+import socketserver
+from SOAPpy.Types import *
+import http.server
 
 # SOAPpy modules
-from Parser      import parseSOAPRPC
-from Config      import SOAPConfig
-from Types       import faultType, voidType, simplify
-from NS          import NS
-from SOAPBuilder import buildSOAP
-from Utilities   import debugHeader, debugFooter
+from .Parser      import parseSOAPRPC
+from .Config      import SOAPConfig
+from .Types       import faultType, voidType, simplify
+from .NS          import NS
+from .SOAPBuilder import buildSOAP
+from .Utilities   import debugHeader, debugFooter
 
 try: from M2Crypto import SSL
 except: pass
 
 #####
 
-from Server import *
+from .Server import *
 
 from pyGlobus.io import GSITCPSocketServer, ThreadingGSITCPSocketServer
 from pyGlobus import ioc

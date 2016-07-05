@@ -21,5 +21,5 @@ server = SOAPProxy("http://services.xmethods.com:80/perl/soaplite.cgi",
                    http_proxy=proxy)
 babel = server._ns('urn:xmethodsBabelFish#BabelFish')
 
-print babel.BabelFish(translationmode = "en_fr",
-    sourcedata = "The quick brown fox did something or other")
+print(babel.BabelFish(translationmode = "en_fr",
+    sourcedata = "The quick brown fox did something or other"))

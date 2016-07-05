@@ -22,29 +22,29 @@ else:
 big = repr('.' * (1<<18) )
 
 # ...in an object
-print "server.echo_ino(big):..",
+print("server.echo_ino(big):..", end=' ')
 tmp = server.echo_ino(big)
-print "done"
+print("done")
 
 # ...in an object in an object
-print "server.prop.echo2(big)..",
+print("server.prop.echo2(big)..", end=' ')
 tmp = server.prop.echo2(big)
-print "done"
+print("done")
 
 # ...with keyword arguments 
-print 'server.echo_wkw(third = big, first = "one", second = "two")..',
+print('server.echo_wkw(third = big, first = "one", second = "two")..', end=' ')
 tmp = server.echo_wkw(third = big, first = "one", second = "two")
-print "done"
+print("done")
 
 # ...with a context object
-print "server.echo_wc(big)..",
+print("server.echo_wc(big)..", end=' ')
 tmp =  server.echo_wc(big)
-print "done"
+print("done")
 
 # ...with a header
 hd = headerType(data = {"mystring": "Hello World"})
-print "server._hd(hd).echo_wc(big)..",
+print("server._hd(hd).echo_wc(big)..", end=' ')
 tmp = server._hd(hd).echo_wc(big)
-print "done"
+print("done")
 
 server.quit()

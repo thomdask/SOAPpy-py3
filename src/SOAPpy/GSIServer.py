@@ -56,7 +56,7 @@ import socketserver
 from SOAPpy.Types import *
 import http.server
 
-# SOAPpy modules
+# SOAPpy-py3 modules
 from .Parser      import parseSOAPRPC
 from .Config      import SOAPConfig
 from .Types       import faultType, voidType, simplify

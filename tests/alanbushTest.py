@@ -6,7 +6,7 @@ ident = '$Id: alanbushTest.py,v 1.5 2003/05/21 14:52:37 warnes Exp $'
 
 import os, re,sys
 
-# add local SOAPpy code to search path
+# add local SOAPpy-py3 code to search path
 sys.path.insert(1, "..")
 
 from SOAPpy import *

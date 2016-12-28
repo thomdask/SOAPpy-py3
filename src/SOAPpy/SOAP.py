@@ -22,17 +22,17 @@ from warnings import warn
 
 warn("""
 
-The sub-module SOAPpy.SOAP is deprecated and is only
+The sub-module SOAPpy-py3.SOAP is deprecated and is only
 provided for short-term backward compatibility.  Objects are now
-available directly within the SOAPpy module.  Thus, instead of
+available directly within the SOAPpy-py3 module.  Thus, instead of
 
-   from SOAPpy import SOAP
+   from SOAPpy-py3 import SOAP
    ...
    SOAP.SOAPProxy(...)
 
 use
 
-   from SOAPpy import SOAPProxy
+   from SOAPpy-py3 import SOAPProxy
    ...
    SOAPProxy(...)
 

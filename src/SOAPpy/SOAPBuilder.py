@@ -39,7 +39,7 @@ from .version import __version__
 import cgi
 from wstools.XMLname import toXMLname, fromXMLname
 
-# SOAPpy modules
+# SOAPpy-py3 modules
 from .Config import Config
 from .NS     import NS
 from SOAPpy.Types  import *

@@ -41,7 +41,7 @@ import string
 import sys
 from SOAPpy.Types import *
 
-# SOAPpy modules
+# SOAPpy-py3 modules
 from .Errors import *
 
 ################################################################################

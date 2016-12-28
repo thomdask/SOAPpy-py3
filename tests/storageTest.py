@@ -16,7 +16,7 @@ except:
 
 
 PROXY="http://www.soapware.org/xmlStorageSystem"
-EMAIL="SOAPpy@actzero.com"
+EMAIL="SOAPpy-py3@actzero.com"
 NAME="test_user"
 PASSWORD="mypasswd"
 SERIAL=1123214

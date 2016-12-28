@@ -3750,7 +3750,7 @@ if __name__ == '__main__':
 
     NOTE: The 'testArray' test will fail because 'referenced' elements are
     included in the return object.  This is a known shortcoming of
-    the current version of SOAPpy.
+    the current version of SOAPpy-py3.
 
     All other tests should succeed.
 

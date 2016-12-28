@@ -53,7 +53,7 @@ from SOAPpy.Types import *
 import http.server
 import _thread
 
-# SOAPpy modules
+# SOAPpy-py3 modules
 from .Parser      import parseSOAPRPC
 from .Config      import Config
 from SOAPpy.Types       import faultType, voidType, simplify
@@ -194,7 +194,7 @@ class SOAPRequestHandler(http.server.BaseHTTPRequestHandler):
     ignore_ext = True
     def version_string(self):
         return '<a href="http://pywebsvcs.sf.net">' + \
-            'SOAPpy ' + __version__ + '</a> (Python ' + \
+            'SOAPpy-py3 ' + __version__ + '</a> (Python ' + \
             sys.version.split()[0] + ')'
 
     def date_time_string(self):

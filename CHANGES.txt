@@ -1,6 +1,14 @@
 CHANGELOG
 =====================
 
+0.52.23 (unreleased)
+--------------------
+
+- Port to Python 3.5
+- Added TwistedSOAPPublisher and Proxy
+  These are located in twisted.web.soap, but thats only for Python 2.
+
+
 0.12.23 (unreleased)
 --------------------
 

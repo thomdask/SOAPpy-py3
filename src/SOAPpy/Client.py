@@ -55,7 +55,7 @@ import socket, http.client
 from http.client import HTTPConnection
 import http.cookies
 
-# SOAPpy modules
+# SOAPpy-py3 modules
 from .Errors      import *
 from .Config      import Config
 from .Parser      import parseSOAPRPC
@@ -71,7 +71,7 @@ import collections
 
 
 def SOAPUserAgent():
-    return "SOAPpy " + __version__ + " (pywebsvcs.sf.net)"
+    return "SOAPpy-py3 " + __version__ + " (pywebsvcs.sf.net)"
 
 
 class HTTP:
@@ -137,7 +137,7 @@ class HTTP:
                 #only add this keyword if non-default for compatibility
                 #with other connection classes
                 response = self._conn.getresponse(buffering)
-        except BadStatusLine as e:
+        except http.BadStatusLine as e:
             ### hmm. if getresponse() ever closes the socket on a bad request,
             ### then we are going to have problems with self.sock
 
@@ -329,7 +329,7 @@ class HTTPTransport:
             debugHeader(s)
             print("POST %s %s" % (real_path, r._http_vsn_str))
             print("Host:", addr.host)
-            print("User-agent: SOAPpy " + __version__ + " (http://pywebsvcs.sf.net)")
+            print("User-agent: SOAPpy-py3 " + __version__ + " (http://pywebsvcs.sf.net)")
             print("Content-type:", t)
             print("Content-length:", len(data))
             print('SOAPAction: "%s"' % soapaction)

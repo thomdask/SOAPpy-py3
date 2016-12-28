@@ -298,7 +298,7 @@ class SOAPParser(xml.sax.handler.ContentHandler):
 
                 if null:
                     if len(cur) or \
-                        (self._data != None and string.join(self._data, "").strip() != ''):
+                        (self._data != None and ''.join(self._data).strip() != ''):
                         raise Error("nils can't have data")
 
                     data = None
@@ -943,7 +943,7 @@ class SOAPParser(xml.sax.handler.ContentHandler):
                             raise OverflowError("%s too large: %s" % (t[1], s))
                     elif d == 0:
                         if type(self.zerofloatre) == StringType:
-                            self.zerofloatre = re.compile(self.zerofloatre)
+                            self.zerofloatre = re.compile(str(self.zerofloatre))
 
                         if self.zerofloatre.search(s):
                             raise UnderflowError("invalid %s: %s" % (t[1], s))

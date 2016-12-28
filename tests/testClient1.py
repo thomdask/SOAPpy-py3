@@ -7,7 +7,7 @@ import sys
 sys.path.insert(1, "..")
 
 import SOAPpy
-#SOAPpy.Config.debug=1
+#SOAPpy-py3.Config.debug=1
 
 # global to shut down server
 quit = 0
@@ -107,7 +107,7 @@ class ClientTestCase(unittest.TestCase):
 
 #         gc.set_debug(gc.DEBUG_SAVEALL)
 #         for i in range(400):
-#             server = SOAPpy.Client.SOAPProxy('127.0.0.1:8000')
+#             server = SOAPpy-py3.Client.SOAPProxy('127.0.0.1:8000')
 #             s = 'Hello World'
 #             server.echo(s)
 #         gc.collect()

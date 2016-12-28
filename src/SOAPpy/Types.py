@@ -34,6 +34,18 @@
 
 """
 
+## PYTHON3 - These types are no longer present in the builtin "types" module
+
+StringType = str
+UnicodeType = str
+ListType = list
+DictType = dict
+IntType = int
+LongType = int
+FloatType = float
+BooleanType = bool
+TupleType = tuple
+InstanceType = object
 
 ident = '$Id: Types.py 1496 2010-03-04 23:46:17Z pooryorick $'
 from .version import __version__
@@ -47,7 +59,7 @@ import re
 import time
 from SOAPpy.Types import *
 
-# SOAPpy modules
+# SOAPpy-py3 modules
 from .Errors    import *
 from .NS        import NS
 from .Utilities import encodeHexString, cleanDate
@@ -1110,7 +1122,7 @@ class longType(anyType):
 
         return data
 
-class int(anyType):
+class intType(anyType):
     _validURIs = (NS.XSD2, NS.XSD3, NS.ENC)
 
     def _checkValueSpace(self, data):
@@ -1611,7 +1623,7 @@ class faultType(structType, Error):
 
 class SOAPException(Exception):
     def __init__(self, code="", string="", detail=None):
-        self.value = ("SOAPpy SOAP Exception", code, string, detail)
+        self.value = ("SOAPpy-py3 SOAP Exception", code, string, detail)
         self.code = code
         self.string = string
         self.detail = detail
@@ -1650,12 +1662,12 @@ class MethodFailed(Exception):
         return repr(self.value)
         
 #######
-# Convert complex SOAPpy objects to native python equivalents
+# Convert complex SOAPpy-py3 objects to native python equivalents
 #######
 
 def simplify(object, level=0):
     """
-    Convert the SOAPpy objects and their contents to simple python types.
+    Convert the SOAPpy-py3 objects and their contents to simple python types.
 
     This function recursively converts the passed 'container' object,
     and all public subobjects. (Private subobjects have names that
@@ -1709,7 +1721,7 @@ def simplify(object, level=0):
 
 def simplify_contents(object, level=0):
     """
-    Convert the contents of SOAPpy objects to simple python types.
+    Convert the contents of SOAPpy-py3 objects to simple python types.
 
     This function recursively converts the sub-objects contained in a
     'container' object to simple python types.

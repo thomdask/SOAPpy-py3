@@ -8,7 +8,7 @@ import os
 
 from setuptools import setup, find_packages
 
-package_version = '0.52.23'
+package_version = '0.52.24'
 
 
 def read(*rnames):

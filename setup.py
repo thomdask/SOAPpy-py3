@@ -8,6 +8,8 @@ import os
 
 from setuptools import setup, find_packages
 
+package_version = '0.52.23'
+
 
 def read(*rnames):
     return "\n" + open(
@@ -22,7 +24,7 @@ long_description = "SOAPpy-py3 provides tools for building SOAP clients and serv
 setup(
     name="SOAPpy-py3",
     provides=['SOAPpy'],
-    version='0.52.23',  # Add 0.40.0 for the SOAPpy-py3 port
+    version=package_version,  # Add 0.40.0 for the SOAPpy-py3 port
     description="SOAP Services for Python",
     maintainer="Synerty",
     maintainer_email="contact@synerty.com",

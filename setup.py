@@ -8,19 +8,11 @@ import os
 
 from setuptools import setup, find_packages
 
-package_version = '0.52.24'
-
-
-def read(*rnames):
-    return "\n" + open(
-        os.path.join('.', *rnames)
-    ).read()
-
+package_version = '0.52.25'
 
 url = "https://github.com/Synerty/SOAPpy-py3"
-long_description = "SOAPpy-py3 provides tools for building SOAP clients and servers.  For more information see " + url \
-                   + '\n' + read('README.txt') \
-                   + '\n' + read('CHANGES.txt')
+long_description = "SOAPpy-py3 provides tools for building SOAP clients and servers.  For more information see " + url
+
 setup(
     name="SOAPpy-py3",
     provides=['SOAPpy'],

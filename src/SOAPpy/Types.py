@@ -50,9 +50,9 @@ InstanceType = object
 ident = '$Id: Types.py 1496 2010-03-04 23:46:17Z pooryorick $'
 from .version import __version__
 
+import html
 import collections
 import base64
-import cgi
 import urllib.request, urllib.parse, urllib.error
 import copy
 import re
@@ -123,7 +123,7 @@ class anyType:
         for attr, value in list(self._attrs.items()):
             ns, n = builder.genns(ns_map, attr[0])
             a += n + ' %s%s="%s"' % \
-                (ns, attr[1], cgi.escape(str(value), 1))
+                (ns, attr[1], html.escape(str(value), 1))
 
         return a
 

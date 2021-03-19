@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-
-import string
-import cgi
+import html
 
 ident = '$Id: interop2html.py 4 2001-06-27 21:36:11Z cullman $'
 
@@ -62,12 +60,12 @@ while c < totalmethods:
       elif status.find("expected") != -1:
         bgcolor = "#FF9900"
         hreftitle = table[key][i][1][1].replace("'","") # remove apostrophes from title properties
-        popuphtml = '"' + cgi.escape(cgi.escape(table[key][i][1][1]).replace("'","&#39;").replace('"',"&#34;")) + '"'
+        popuphtml = '"' + html.escape(html.escape(table[key][i][1][1]).replace("'","&#39;").replace('"',"&#34;")) + '"'
         status = "<a title='" + hreftitle + "' href='javascript:popup(" + popuphtml + ")'>Failed (expected)</a>"
       else:
         bgcolor = "#CC0000"
         hreftitle = table[key][i][1][1].replace("'","") # remove apostrophes from title properties
-        popuphtml = '"' + cgi.escape(cgi.escape(table[key][i][1][1]).replace("'","&#39;").replace('"',"&#34;")) + '"'
+        popuphtml = '"' + html.escape(html.escape(table[key][i][1][1]).replace("'","&#39;").replace('"',"&#34;")) + '"'
         status = "<a title='" + hreftitle + "' href='javascript:popup(" + popuphtml + ")'>Failed</a>"
       print("<td align='center' bgcolor=" , bgcolor , ">" , status , "</td>")
     print("</tr>")

@@ -137,7 +137,7 @@ class HTTP:
                 #only add this keyword if non-default for compatibility
                 #with other connection classes
                 response = self._conn.getresponse(buffering)
-        except http.BadStatusLine as e:
+        except http.client.BadStatusLine as e:
             ### hmm. if getresponse() ever closes the socket on a bad request,
             ### then we are going to have problems with self.sock
 
@@ -152,7 +152,7 @@ class HTTP:
             return -1, e.line, None
 
         self.headers = response.msg
-        self.file = response.fp
+        self.file = response
         return response.status, response.reason, response.msg
 
     def close(self):

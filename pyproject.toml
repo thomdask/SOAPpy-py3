@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "SOAPpy-py3"
-version = "0.52.28"
+version = "0.52.29"
 maintainers = [{name = "Synerty", email = "contact@synerty.com"}]
 description = "SOAP Services for Python"
 classifiers = [

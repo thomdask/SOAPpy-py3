@@ -6,7 +6,6 @@ from .NS        import NS
 from .Utilities import *
 import six
 
-import string
 import xml.sax
 from wstools.XMLname import fromXMLname
 import collections
@@ -222,7 +221,7 @@ class SOAPParser(xml.sax.handler.ContentHandler):
             if href:
                 if href[0] != '#':
                     raise Error("Non-local hrefs are not yet suppported.")
-                if self._data != None and string.join(self._data, "").strip() != '':
+                if self._data != None and "".join(self._data).strip() != '':
                     raise Error("hrefs can't have data")
 
                 href = href[1:]
@@ -334,14 +333,14 @@ class SOAPParser(xml.sax.handler.ContentHandler):
 
 # XXX What if rule != kind?
                 if isinstance(rule, collections.Callable):
-                    data = rule(string.join(self._data, ""))
+                    data = rule("".join(self._data))
                 elif type(rule) == DictType:
                     data = structType(name = (ns, name), attrs = attrs)
                 elif rule[1][:9] == 'arrayType':
                     data = self.convertType(cur.contents,
                                             rule, attrs)
                 else:
-                    data = self.convertType(string.join(self._data, ""),
+                    data = self.convertType("".join(self._data),
                                             rule, attrs)
 
                 break
